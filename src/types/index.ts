@@ -1,3 +1,4 @@
+// src/types/index.ts
 export interface User {
   uid: string;
   email: string;
@@ -8,6 +9,7 @@ export interface User {
   totalTrialEarnings: number;
   balance: number;
   activePackage?: string;
+  packageActivatedAt?: string;
   isAdmin?: boolean;
 }
 
@@ -33,6 +35,7 @@ export interface MiningSession {
   totalEarned: number;
   isActive: boolean;
   packageId?: string;
+  lastUpdated?: string;
 }
 
 export interface PaymentNotification {
