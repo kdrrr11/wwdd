@@ -176,6 +176,7 @@ export const useMining = () => {
       // Calculate hash rate based on package
       const hashRate = calculateHashRate(coin.baseHashRate, user.activePackage);
 
+      // Create new session with proper packageId handling
       const newSession: Omit<MiningSession, 'id'> = {
         userId: user.uid,
         coin: coinId,
@@ -183,7 +184,8 @@ export const useMining = () => {
         hashRate,
         totalEarned: 0,
         isActive: true,
-        packageId: user.activePackage,
+        // Sadece activePackage varsa packageId ekle, yoksa hiç ekleme
+        ...(user.activePackage && { packageId: user.activePackage }),
         lastUpdated: new Date().toISOString()
       };
 

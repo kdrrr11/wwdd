@@ -8,7 +8,7 @@ export interface User {
   trialEndDate?: string;
   totalTrialEarnings: number;
   balance: number;
-  activePackage?: string;
+  activePackage?: string | null;
   packageActivatedAt?: string;
   isAdmin?: boolean;
 }
@@ -34,7 +34,7 @@ export interface MiningSession {
   hashRate: number;
   totalEarned: number;
   isActive: boolean;
-  packageId?: string;
+  packageId?: string | null; // Optional olarak tanımlandı
   lastUpdated?: string;
 }
 

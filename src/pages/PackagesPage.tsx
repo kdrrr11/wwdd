@@ -43,7 +43,7 @@ export const PackagesPage: React.FC = () => {
     },
   ];
 
-  const trcAddress = "TYourTRCAddressHereForPayments123456789";
+  const trcAddress = "TMjSDNto6hoHUV9udDcXVAtuxxX6cnhhv3";
 
   const copyAddress = async () => {
     try {
