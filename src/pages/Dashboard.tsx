@@ -10,7 +10,7 @@ export const Dashboard: React.FC = () => {
 
   const stats = [
     {
-      label: 'Total Balance',
+      label: 'Toplam Bakiye',
       value: `$${user?.balance.toFixed(2) || '0.00'}`,
       icon: DollarSign,
       color: 'text-green-400',
@@ -19,7 +19,7 @@ export const Dashboard: React.FC = () => {
       changeColor: 'text-green-400'
     },
     {
-      label: 'Trial Earnings',
+      label: 'Deneme Kazancı',
       value: `$${user?.totalTrialEarnings.toFixed(2) || '0.00'}`,
       icon: TrendingUp,
       color: 'text-blue-400',
@@ -28,44 +28,44 @@ export const Dashboard: React.FC = () => {
       changeColor: 'text-blue-400'
     },
     {
-      label: 'Active Package',
-      value: user?.activePackage || 'Free Trial',
+      label: 'Aktif Paket',
+      value: user?.activePackage || 'Ücretsiz Deneme',
       icon: Package,
       color: 'text-purple-400',
       bgColor: 'bg-purple-600/20',
-      change: user?.activePackage ? 'Premium' : 'Trial',
+      change: user?.activePackage ? 'Premium' : 'Deneme',
       changeColor: user?.activePackage ? 'text-purple-400' : 'text-gray-400'
     }
   ];
 
   const quickActions = [
     {
-      title: 'Start Mining',
-      description: 'Begin earning crypto',
+      title: 'Madenciliğe Başla',
+      description: 'Kripto kazanmaya başla',
       icon: Pickaxe,
       color: 'bg-blue-600/20 border-blue-500/30 hover:bg-blue-600/30',
       iconColor: 'text-blue-400',
       link: '/mining'
     },
     {
-      title: 'View Packages',
-      description: 'Upgrade your plan',
+      title: 'Paketleri Gör',
+      description: 'Planınızı yükseltin',
       icon: Package,
       color: 'bg-purple-600/20 border-purple-500/30 hover:bg-purple-600/30',
       iconColor: 'text-purple-400',
       link: '/packages'
     },
     {
-      title: 'Check Earnings',
-      description: 'View your progress',
+      title: 'Kazançları Kontrol Et',
+      description: 'İlerlemenizi görün',
       icon: TrendingUp,
       color: 'bg-green-600/20 border-green-500/30 hover:bg-green-600/30',
       iconColor: 'text-green-400',
       link: '/profile'
     },
     {
-      title: 'Request Withdrawal',
-      description: 'Cash out earnings',
+      title: 'Para Çekme Talebi',
+      description: 'Kazancınızı çekin',
       icon: DollarSign,
       color: 'bg-yellow-600/20 border-yellow-500/30 hover:bg-yellow-600/30',
       iconColor: 'text-yellow-400',
@@ -77,8 +77,8 @@ export const Dashboard: React.FC = () => {
     <div className="space-y-6 md:space-y-8 pb-20 lg:pb-8">
       {/* Header */}
       <div className="text-center lg:text-left">
-        <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">Dashboard</h1>
-        <p className="text-gray-400 text-sm md:text-base">Welcome back, {user?.email}</p>
+        <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">Kontrol Paneli</h1>
+        <p className="text-gray-400 text-sm md:text-base">Tekrar hoşgeldiniz, {user?.email}</p>
       </div>
 
       {/* Trial Status */}
@@ -109,7 +109,7 @@ export const Dashboard: React.FC = () => {
 
       {/* Quick Actions */}
       <div className="bg-gray-800/50 backdrop-blur-md rounded-xl p-4 md:p-6 border border-gray-700">
-        <h3 className="text-lg md:text-xl font-semibold text-white mb-4 md:mb-6">Quick Actions</h3>
+        <h3 className="text-lg md:text-xl font-semibold text-white mb-4 md:mb-6">Hızlı İşlemler</h3>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
           {quickActions.map((action, index) => {
             const Icon = action.icon;
@@ -133,9 +133,9 @@ export const Dashboard: React.FC = () => {
       {/* Recent Activity */}
       <div className="bg-gray-800/50 backdrop-blur-md rounded-xl p-4 md:p-6 border border-gray-700">
         <div className="flex items-center justify-between mb-4 md:mb-6">
-          <h3 className="text-lg md:text-xl font-semibold text-white">Recent Activity</h3>
+          <h3 className="text-lg md:text-xl font-semibold text-white">Son Aktiviteler</h3>
           <Link to="/profile" className="text-blue-400 hover:text-blue-300 text-sm flex items-center space-x-1">
-            <span>View All</span>
+            <span>Tümünü Gör</span>
             <Eye className="h-3 w-3" />
           </Link>
         </div>
@@ -145,12 +145,12 @@ export const Dashboard: React.FC = () => {
             <div className="flex items-center space-x-3">
               <div className="w-2 h-2 rounded-full bg-green-400"></div>
               <div className="min-w-0 flex-1">
-                <p className="text-white font-medium text-sm md:text-base">Account Created</p>
-                <p className="text-gray-400 text-xs md:text-sm">Free trial activated</p>
+                <p className="text-white font-medium text-sm md:text-base">Hesap Oluşturuldu</p>
+                <p className="text-gray-400 text-xs md:text-sm">Ücretsiz deneme etkinleştirildi</p>
               </div>
             </div>
             <p className="text-gray-400 text-xs md:text-sm">
-              {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Today'}
+              {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('tr-TR') : 'Bugün'}
             </p>
           </div>
           
@@ -159,12 +159,12 @@ export const Dashboard: React.FC = () => {
               <div className="flex items-center space-x-3">
                 <div className="w-2 h-2 rounded-full bg-purple-400"></div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-white font-medium text-sm md:text-base">Package Activated</p>
-                  <p className="text-gray-400 text-xs md:text-sm">{user.activePackage} package</p>
+                  <p className="text-white font-medium text-sm md:text-base">Paket Etkinleştirildi</p>
+                  <p className="text-gray-400 text-xs md:text-sm">{user.activePackage} paketi</p>
                 </div>
               </div>
               <p className="text-gray-400 text-xs md:text-sm">
-                {user.packageActivatedAt ? new Date(user.packageActivatedAt).toLocaleDateString() : 'Recently'}
+                {user.packageActivatedAt ? new Date(user.packageActivatedAt).toLocaleDateString('tr-TR') : 'Yakın zamanda'}
               </p>
             </div>
           )}
@@ -174,8 +174,8 @@ export const Dashboard: React.FC = () => {
               <div className="flex items-center space-x-3">
                 <div className="w-2 h-2 rounded-full bg-blue-400"></div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-white font-medium text-sm md:text-base">Mining Earnings</p>
-                  <p className="text-gray-400 text-xs md:text-sm">Balance updated</p>
+                  <p className="text-white font-medium text-sm md:text-base">Madencilik Kazancı</p>
+                  <p className="text-gray-400 text-xs md:text-sm">Bakiye güncellendi</p>
                 </div>
               </div>
               <p className="text-green-400 font-medium text-xs md:text-sm">
@@ -195,9 +195,9 @@ export const Dashboard: React.FC = () => {
                 <Clock className="h-5 w-5 md:h-6 md:w-6 text-blue-400" />
               </div>
               <div>
-                <h3 className="text-white font-semibold text-sm md:text-base">Trial Active</h3>
+                <h3 className="text-white font-semibold text-sm md:text-base">Deneme Aktif</h3>
                 <p className="text-gray-300 text-xs md:text-sm">
-                  ${(25 - (user?.totalTrialEarnings || 0)).toFixed(2)} remaining
+                  ${(25 - (user?.totalTrialEarnings || 0)).toFixed(2)} kaldı
                 </p>
               </div>
             </div>
@@ -205,7 +205,7 @@ export const Dashboard: React.FC = () => {
               to="/packages"
               className="px-3 py-2 md:px-4 md:py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-xs md:text-sm transition-colors"
             >
-              Upgrade
+              Yükselt
             </Link>
           </div>
         </div>
