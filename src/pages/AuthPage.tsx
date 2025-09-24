@@ -17,7 +17,7 @@ export const AuthPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) {
-      toast.error('Please fill in all fields');
+      toast.error('Lütfen tüm alanları doldurun');
       return;
     }
 
@@ -25,14 +25,14 @@ export const AuthPage: React.FC = () => {
     try {
       if (isLogin) {
         await login(email, password);
-        toast.success('Welcome back!');
+        toast.success('Tekrar hoşgeldiniz!');
       } else {
         await register(email, password);
-        toast.success('Account created successfully!');
+        toast.success('Hesap başarıyla oluşturuldu!');
       }
       navigate('/dashboard');
     } catch (error: any) {
-      toast.error(error.message || 'Authentication failed');
+      toast.error(error.message || 'Kimlik doğrulama başarısız');
     }
     setLoading(false);
   };
@@ -47,14 +47,14 @@ export const AuthPage: React.FC = () => {
             </div>
             <h1 className="text-3xl font-bold text-white mb-2">CloudMiner</h1>
             <p className="text-gray-400">
-              {isLogin ? 'Welcome back to mining' : 'Start your mining journey'}
+              {isLogin ? 'Madenciliğe tekrar hoşgeldiniz' : 'Madencilik yolculuğunuzu başlatın'}
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
-                Email
+                E-posta
               </label>
               <input
                 id="email"
@@ -62,14 +62,14 @@ export const AuthPage: React.FC = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter your email"
+                placeholder="E-posta adresinizi girin"
                 required
               />
             </div>
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
-                Password
+                Şifre
               </label>
               <div className="relative">
                 <input
@@ -78,7 +78,7 @@ export const AuthPage: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full px-4 py-3 pr-12 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter your password"
+                  placeholder="Şifrenizi girin"
                   required
                 />
                 <button
@@ -96,30 +96,30 @@ export const AuthPage: React.FC = () => {
               disabled={loading}
               className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
-              {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
+              {loading ? 'İşleniyor...' : (isLogin ? 'Giriş Yap' : 'Kayıt Ol')}
             </button>
           </form>
 
           <div className="mt-6 text-center">
             <p className="text-gray-400">
-              {isLogin ? "Don't have an account?" : 'Already have an account?'}
+              {isLogin ? "Hesabınız yok mu?" : 'Zaten hesabınız var mı?'}
               <button
                 onClick={() => setIsLogin(!isLogin)}
                 className="ml-2 text-blue-400 hover:text-blue-300 font-medium"
               >
-                {isLogin ? 'Sign Up' : 'Sign In'}
+                {isLogin ? 'Kayıt Ol' : 'Giriş Yap'}
               </button>
             </p>
           </div>
 
           {!isLogin && (
             <div className="mt-6 p-4 rounded-lg bg-blue-600/20 border border-blue-500/30">
-              <h4 className="text-blue-400 font-semibold mb-2">Free Trial Included!</h4>
+              <h4 className="text-blue-400 font-semibold mb-2">Ücretsiz Deneme Dahil!</h4>
               <ul className="text-sm text-gray-300 space-y-1">
-                <li>• 3 months free mining</li>
-                <li>• Up to $25 USDT earnings</li>
-                <li>• All coins available</li>
-                <li>• No payment required</li>
+                <li>• 3 ay ücretsiz madencilik</li>
+                <li>• 25 USDT'ye kadar kazanç</li>
+                <li>• Tüm coinler kullanılabilir</li>
+                <li>• Ödeme gerekmez</li>
               </ul>
             </div>
           )}
