@@ -14,15 +14,15 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navigation = [
-    { name: 'Dashboard', href: '/dashboard', icon: Home },
-    { name: 'Mining', href: '/mining', icon: Pickaxe },
-    { name: 'Packages', href: '/packages', icon: Package },
-    { name: 'Withdrawal', href: '/withdrawal', icon: DollarSign },
-    { name: 'Profile', href: '/profile', icon: User },
+    { name: 'Kontrol Paneli', href: '/dashboard', icon: Home },
+    { name: 'Madencilik', href: '/mining', icon: Pickaxe },
+    { name: 'Paketler', href: '/packages', icon: Package },
+    { name: 'Para Çekme', href: '/withdrawal', icon: DollarSign },
+    { name: 'Profil', href: '/profile', icon: User },
   ];
 
   if (user?.isAdmin) {
-    navigation.push({ name: 'Admin', href: '/admin', icon: Settings });
+    navigation.push({ name: 'Yönetici', href: '/admin', icon: Settings });
   }
 
   const handleLogout = async () => {
@@ -79,7 +79,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                 className="hidden lg:flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
               >
                 <LogOut className="h-4 w-4" />
-                <span>Logout</span>
+                <span>Çıkış Yap</span>
               </button>
 
               {/* Mobile Menu Button */}
@@ -101,7 +101,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
               <div className="flex items-center justify-between pb-4 border-b border-gray-700">
                 <div>
                   <p className="text-sm text-gray-300 truncate">{user?.email}</p>
-                  <p className="text-xs text-blue-400">Balance: ${user?.balance.toFixed(2)}</p>
+                  <p className="text-xs text-blue-400">Bakiye: ${user?.balance.toFixed(2)}</p>
                 </div>
               </div>
               
@@ -132,7 +132,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                 className="flex items-center space-x-3 w-full px-3 py-3 rounded-md font-medium text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
               >
                 <LogOut className="h-5 w-5" />
-                <span>Logout</span>
+                <span>Çıkış Yap</span>
               </button>
             </div>
           </div>
