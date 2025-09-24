@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Giriş Yap | FreeCloudMiner</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #fff;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            min-height: 100vh;
+        }
+
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .auth-card {
+            background: rgba(31, 41, 55, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(75, 85, 99, 0.3);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #60a5fa;
+            text-decoration: none;
+            font-size: 0.875rem;
+            margin-bottom: 2rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: #93c5fd;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .logo-icon {
+            width: 3rem;
+            height: 3rem;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .auth-title {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-subtitle {
+            color: #9ca3af;
+            font-size: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            color: #d1d5db;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: #374151;
+            border: 1px solid #4b5563;
+            border-radius: 0.5rem;
+            color: #ffffff;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            padding: 0.25rem;
+            transition: color 0.2s;
+        }
+
+        .password-toggle:hover {
+            color: #ffffff;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 0.875rem;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border: none;
+            border-radius: 0.5rem;
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 1.5rem;
+        }
+
+        .submit-btn:hover {
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            transform: translateY(-1px);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .auth-switch {
+            text-align: center;
+            color: #9ca3af;
+        }
+
+        .auth-switch-link {
+            color: #60a5fa;
+            text-decoration: none;
+            font-weight: 500;
+            margin-left: 0.5rem;
+            transition: color 0.2s;
+        }
+
+        .auth-switch-link:hover {
+            color: #93c5fd;
+        }
+
+        .trial-info {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .trial-info h4 {
+            color: #60a5fa;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .trial-info ul {
+            list-style: none;
+            color: #d1d5db;
+            font-size: 0.75rem;
+        }
+
+        .trial-info li {
+            margin-bottom: 0.25rem;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .trust-indicators {
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .trust-row {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            color: #6b7280;
+            font-size: 0.75rem;
+        }
+
+        .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .success-message {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #86efac;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 480px) {
+            .auth-card {
+                padding: 1.5rem;
+                margin: 0.5rem;
+            }
+            
+            .auth-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <!-- Back to home link -->
+            <a href="index.html" class="back-link">
+                ← Ana Sayfaya Dön
+            </a>
+            
+            <!-- Header -->
+            <div class="auth-header">
+                <div class="logo">
+                    <div class="logo-icon">⚡</div>
+                </div>
+                <h1 class="auth-title">FreeCloudMiner</h1>
+                <p class="auth-subtitle" id="authSubtitle">
+                    Madenciliğe tekrar hoşgeldiniz
+                </p>
+            </div>
+
+            <!-- Error/Success Messages -->
+            <div id="messageContainer"></div>
+
+            <!-- Auth Form -->
+            <form id="authForm">
+                <div class="form-group">
+                    <label for="email" class="form-label">E-posta</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        class="form-input" 
+                        placeholder="E-posta adresinizi girin"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Şifre</label>
+                    <div class="password-container">
+                        <input 
+                            type="password" 
+                            id="password" 
+                            class="form-input" 
+                            placeholder="Şifrenizi girin"
+                            required
+                        >
+                        <button type="button" class="password-toggle" onclick="togglePassword()">
+                            👁️
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    Giriş Yap
+                </button>
+            </form>
+
+            <!-- Auth Switch -->
+            <div class="auth-switch">
+                <span id="switchText">Hesabınız yok mu?</span>
+                <a href="#" class="auth-switch-link" onclick="toggleAuthMode()" id="switchLink">
+                    Kayıt Ol
+                </a>
+            </div>
+
+            <!-- Trial Info (only for register) -->
+            <div class="trial-info" id="trialInfo" style="display: none;">
+                <h4>
+                    <span>🎁</span>
+                    Ücretsiz Deneme Dahil!
+                </h4>
+                <ul>
+                    <li>• 3 ay ücretsiz madencilik</li>
+                    <li>• 25 USDT'ye kadar kazanç</li>
+                    <li>• Tüm coinler kullanılabilir</li>
+                    <li>• Ödeme gerekmez</li>
+                </ul>
+            </div>
+
+            <!-- Trust Indicators -->
+            <div class="trust-indicators">
+                <div class="trust-row">
+                    <div class="trust-item">
+                        <span>🔒</span>
+                        <span>SSL Güvenli</span>
+                    </div>
+                    <div class="trust-item">
+                        <span>⚡</span>
+                        <span>Hızlı İşlem</span>
+                    </div>
+                    <div class="trust-item">
+                        <span>🛡️</span>
+                        <span>Güvenilir</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isLogin = true;
+
+        // Toggle between login and register
+        function toggleAuthMode() {
+            isLogin = !isLogin;
+            
+            const subtitle = document.getElementById('authSubtitle');
+            const submitBtn = document.getElementById('submitBtn');
+            const switchText = document.getElementById('switchText');
+            const switchLink = document.getElementById('switchLink');
+            const trialInfo = document.getElementById('trialInfo');
+            
+            if (isLogin) {
+                subtitle.textContent = 'Madenciliğe tekrar hoşgeldiniz';
+                submitBtn.textContent = 'Giriş Yap';
+                switchText.textContent = 'Hesabınız yok mu?';
+                switchLink.textContent = 'Kayıt Ol';
+                trialInfo.style.display = 'none';
+            } else {
+                subtitle.textContent = 'Madencilik yolculuğunuzu başlatın';
+                submitBtn.textContent = 'Kayıt Ol';
+                switchText.textContent = 'Zaten hesabınız var mı?';
+                switchLink.textContent = 'Giriş Yap';
+                trialInfo.style.display = 'block';
+            }
+            
+            clearMessages();
+        }
+
+        // Toggle password visibility
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleBtn = document.querySelector('.password-toggle');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleBtn.textContent = '🙈';
+            } else {
+                passwordInput.type = 'password';
+                toggleBtn.textContent = '👁️';
+            }
+        }
+
+        // Show message
+        function showMessage(message, type = 'error') {
+            const container = document.getElementById('messageContainer');
+            const messageClass = type === 'success' ? 'success-message' : 'error-message';
+            container.innerHTML = `<div class="${messageClass}">${message}</div>`;
+        }
+
+        // Clear messages
+        function clearMessages() {
+            document.getElementById('messageContainer').innerHTML = '';
+        }
+
+        // Simulate authentication (replace with real Firebase auth)
+        function simulateAuth(email, password, isRegister = false) {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    // Simulate different responses
+                    if (email === 'test@test.com' && password === '123456') {
+                        resolve({ user: { email, uid: '12345' } });
+                    } else if (isRegister) {
+                        if (email && password.length >= 6) {
+                            resolve({ user: { email, uid: 'new-user' } });
+                        } else {
+                            reject(new Error('Şifre en az 6 karakter olmalıdır'));
+                        }
+                    } else {
+                        reject(new Error('Geçersiz e-posta veya şifre'));
+                    }
+                }, 1500);
+            });
+        }
+
+        // Handle form submission
+        document.getElementById('authForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const submitBtn = document.getElementById('submitBtn');
+            
+            if (!email || !password) {
+                showMessage('Lütfen tüm alanları doldurun');
+                return;
+            }
+            
+            // Show loading state
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loading-spinner"></span>İşleniyor...';
+            clearMessages();
+            
+            try {
+                const result = await simulateAuth(email, password, !isLogin);
+                showMessage(
+                    isLogin ? 'Tekrar hoşgeldiniz!' : 'Hesap başarıyla oluşturuldu!', 
+                    'success'
+                );
+                
+                // Simulate redirect to dashboard after success
+                setTimeout(() => {
+                    showMessage('Dashboard\'a yönlendiriliyorsunuz...', 'success');
+                    // In real app: window.location.href = '/dashboard';
+                    setTimeout(() => {
+                        alert('Demo: Gerçek uygulamada dashboard\'a yönlendirileceksiniz');
+                    }, 1000);
+                }, 1000);
+                
+            } catch (error) {
+                showMessage(error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        });
+
+        // Auto-focus email input
+        document.getElementById('email').focus();
+    </script>
+</body>
+</html>
