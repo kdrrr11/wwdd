@@ -90,9 +90,9 @@ export const AdminPage: React.FC = () => {
         }
       }
 
-      toast.success(`Payment ${approved ? 'approved' : 'rejected'} successfully`);
+      toast.success(`Ödeme ${approved ? 'onaylandı' : 'reddedildi'}`);
     } catch (error) {
-      toast.error('Failed to process payment');
+      toast.error('Ödeme işlenemedi');
     }
     setLoading(false);
   };
@@ -124,11 +124,21 @@ export const AdminPage: React.FC = () => {
         }
       }
 
-      toast.success(`Withdrawal ${approved ? 'approved' : 'rejected'} successfully`);
+      toast.success(`Para çekme ${approved ? 'onaylandı' : 'reddedildi'}`);
     } catch (error) {
-      toast.error('Failed to process withdrawal');
+      toast.error('Para çekme işlenemedi');
     }
     setLoading(false);
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'pending': return 'beklemede';
+      case 'approved': return 'onaylandı';
+      case 'rejected': return 'reddedildi';
+      case 'completed': return 'tamamlandı';
+      default: return status;
+    }
   };
 
   if (!user?.isAdmin) {
@@ -136,8 +146,8 @@ export const AdminPage: React.FC = () => {
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-white mb-2">Access Denied</h2>
-          <p className="text-gray-400">You don't have admin privileges.</p>
+          <h2 className="text-xl font-semibold text-white mb-2">Erişim Engellendi</h2>
+          <p className="text-gray-400">Yönetici yetkiniz bulunmuyor.</p>
         </div>
       </div>
     );
@@ -145,21 +155,21 @@ export const AdminPage: React.FC = () => {
 
   const stats = [
     {
-      label: 'Total Users',
+      label: 'Toplam Kullanıcı',
       value: users.length.toString(),
       icon: Users,
       color: 'text-blue-400',
       bgColor: 'bg-blue-600/20'
     },
     {
-      label: 'Pending Payments',
+      label: 'Bekleyen Ödemeler',
       value: paymentNotifications.filter(p => p.status === 'pending').length.toString(),
       icon: DollarSign,
       color: 'text-yellow-400',
       bgColor: 'bg-yellow-600/20'
     },
     {
-      label: 'Pending Withdrawals',
+      label: 'Bekleyen Para Çekmeler',
       value: withdrawalRequests.filter(w => w.status === 'pending').length.toString(),
       icon: Package,
       color: 'text-green-400',
@@ -170,8 +180,8 @@ export const AdminPage: React.FC = () => {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-white mb-2">Admin Panel</h1>
-        <p className="text-gray-400">Manage payments, withdrawals, and users</p>
+        <h1 className="text-3xl font-bold text-white mb-2">Yönetici Paneli</h1>
+        <p className="text-gray-400">Ödemeleri, para çekmeleri ve kullanıcıları yönetin</p>
       </div>
 
       {/* Stats */}
@@ -197,9 +207,9 @@ export const AdminPage: React.FC = () => {
       {/* Tabs */}
       <div className="flex space-x-1 bg-gray-800/50 p-1 rounded-lg">
         {[
-          { id: 'payments', label: 'Payment Notifications' },
-          { id: 'withdrawals', label: 'Withdrawal Requests' },
-          { id: 'users', label: 'User Management' }
+          { id: 'payments', label: 'Ödeme Bildirimleri' },
+          { id: 'withdrawals', label: 'Para Çekme Talepleri' },
+          { id: 'users', label: 'Kullanıcı Yönetimi' }
         ].map((tab) => (
           <button
             key={tab.id}
@@ -218,19 +228,19 @@ export const AdminPage: React.FC = () => {
       {/* Payment Notifications */}
       {activeTab === 'payments' && (
         <div className="bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-gray-700">
-          <h3 className="text-xl font-semibold text-white mb-6">Payment Notifications</h3>
+          <h3 className="text-xl font-semibold text-white mb-6">Ödeme Bildirimleri</h3>
           <div className="space-y-4">
             {paymentNotifications.length === 0 ? (
-              <p className="text-gray-400 text-center py-8">No payment notifications</p>
+              <p className="text-gray-400 text-center py-8">Ödeme bildirimi yok</p>
             ) : (
               paymentNotifications.map((notification) => (
                 <div key={notification.id} className="bg-gray-700/50 rounded-lg p-4">
                   <div className="flex items-center justify-between mb-4">
                     <div>
-                      <p className="text-white font-medium">Package: {notification.packageId}</p>
-                      <p className="text-sm text-gray-400">Amount: ${notification.amount}</p>
+                      <p className="text-white font-medium">Paket: {notification.packageId}</p>
+                      <p className="text-sm text-gray-400">Tutar: ${notification.amount}</p>
                       <p className="text-sm text-gray-400">
-                        Date: {format(new Date(notification.createdAt), 'MMM dd, yyyy HH:mm')}
+                        Tarih: {format(new Date(notification.createdAt), 'dd MMM yyyy HH:mm')}
                       </p>
                       {notification.txHash && (
                         <p className="text-sm text-gray-400">TX: {notification.txHash}</p>
@@ -242,7 +252,7 @@ export const AdminPage: React.FC = () => {
                         notification.status === 'approved' ? 'bg-green-600/20 text-green-400' :
                         'bg-red-600/20 text-red-400'
                       }`}>
-                        {notification.status}
+                        {getStatusText(notification.status)}
                       </span>
                     </div>
                   </div>
@@ -255,7 +265,7 @@ export const AdminPage: React.FC = () => {
                         className="flex items-center space-x-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm disabled:opacity-50"
                       >
                         <Check className="h-4 w-4" />
-                        <span>Approve</span>
+                        <span>Onayla</span>
                       </button>
                       <button
                         onClick={() => handlePaymentApproval(notification.id, false)}
@@ -263,7 +273,7 @@ export const AdminPage: React.FC = () => {
                         className="flex items-center space-x-2 px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm disabled:opacity-50"
                       >
                         <X className="h-4 w-4" />
-                        <span>Reject</span>
+                        <span>Reddet</span>
                       </button>
                     </div>
                   )}
@@ -277,19 +287,19 @@ export const AdminPage: React.FC = () => {
       {/* Withdrawal Requests */}
       {activeTab === 'withdrawals' && (
         <div className="bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-gray-700">
-          <h3 className="text-xl font-semibold text-white mb-6">Withdrawal Requests</h3>
+          <h3 className="text-xl font-semibold text-white mb-6">Para Çekme Talepleri</h3>
           <div className="space-y-4">
             {withdrawalRequests.length === 0 ? (
-              <p className="text-gray-400 text-center py-8">No withdrawal requests</p>
+              <p className="text-gray-400 text-center py-8">Para çekme talebi yok</p>
             ) : (
               withdrawalRequests.map((request) => (
                 <div key={request.id} className="bg-gray-700/50 rounded-lg p-4">
                   <div className="flex items-center justify-between mb-4">
                     <div>
-                      <p className="text-white font-medium">Amount: ${request.amount}</p>
-                      <p className="text-sm text-gray-400">Wallet: {request.walletAddress}</p>
+                      <p className="text-white font-medium">Tutar: ${request.amount}</p>
+                      <p className="text-sm text-gray-400">Cüzdan: {request.walletAddress}</p>
                       <p className="text-sm text-gray-400">
-                        Date: {format(new Date(request.requestedAt), 'MMM dd, yyyy HH:mm')}
+                        Tarih: {format(new Date(request.requestedAt), 'dd MMM yyyy HH:mm')}
                       </p>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -298,7 +308,7 @@ export const AdminPage: React.FC = () => {
                         request.status === 'approved' ? 'bg-green-600/20 text-green-400' :
                         'bg-red-600/20 text-red-400'
                       }`}>
-                        {request.status}
+                        {getStatusText(request.status)}
                       </span>
                     </div>
                   </div>
@@ -311,7 +321,7 @@ export const AdminPage: React.FC = () => {
                         className="flex items-center space-x-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm disabled:opacity-50"
                       >
                         <Check className="h-4 w-4" />
-                        <span>Approve</span>
+                        <span>Onayla</span>
                       </button>
                       <button
                         onClick={() => handleWithdrawalApproval(request.id, false)}
@@ -319,7 +329,7 @@ export const AdminPage: React.FC = () => {
                         className="flex items-center space-x-2 px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm disabled:opacity-50"
                       >
                         <X className="h-4 w-4" />
-                        <span>Reject</span>
+                        <span>Reddet</span>
                       </button>
                     </div>
                   )}
@@ -333,16 +343,16 @@ export const AdminPage: React.FC = () => {
       {/* User Management */}
       {activeTab === 'users' && (
         <div className="bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-gray-700">
-          <h3 className="text-xl font-semibold text-white mb-6">User Management</h3>
+          <h3 className="text-xl font-semibold text-white mb-6">Kullanıcı Yönetimi</h3>
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
                 <tr className="border-b border-gray-700">
-                  <th className="pb-3 text-gray-400">Email</th>
-                  <th className="pb-3 text-gray-400">Balance</th>
-                  <th className="pb-3 text-gray-400">Package</th>
-                  <th className="pb-3 text-gray-400">Trial Earnings</th>
-                  <th className="pb-3 text-gray-400">Joined</th>
+                  <th className="pb-3 text-gray-400">E-posta</th>
+                  <th className="pb-3 text-gray-400">Bakiye</th>
+                  <th className="pb-3 text-gray-400">Paket</th>
+                  <th className="pb-3 text-gray-400">Deneme Kazancı</th>
+                  <th className="pb-3 text-gray-400">Katılım</th>
                 </tr>
               </thead>
               <tbody>
@@ -350,10 +360,10 @@ export const AdminPage: React.FC = () => {
                   <tr key={userData.uid} className="border-b border-gray-700/50">
                     <td className="py-3 text-white">{userData.email}</td>
                     <td className="py-3 text-green-400">${userData.balance.toFixed(2)}</td>
-                    <td className="py-3 text-white">{userData.activePackage || 'Free Trial'}</td>
+                    <td className="py-3 text-white">{userData.activePackage || 'Ücretsiz Deneme'}</td>
                     <td className="py-3 text-blue-400">${userData.totalTrialEarnings.toFixed(2)}</td>
                     <td className="py-3 text-gray-400">
-                      {format(new Date(userData.createdAt), 'MMM dd, yyyy')}
+                      {format(new Date(userData.createdAt), 'dd MMM yyyy')}
                     </td>
                   </tr>
                 ))}
