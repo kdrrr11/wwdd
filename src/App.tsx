@@ -16,6 +16,11 @@ import { useAuth } from './hooks/useAuth';
 function App() {
   const { user, loading } = useAuth();
 
+  // Debug için console.log ekleyelim
+  console.log('Current user:', user);
+  console.log('Loading state:', loading);
+  console.log('Current URL:', window.location.pathname);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 flex items-center justify-center">
@@ -54,37 +59,107 @@ function App() {
         />
         
         <Routes>
-          {/* Ana sayfa - Landing Page */}
+          {/* Ana sayfa - Landing Page (kullanıcı giriş yapmamışsa) */}
           <Route 
             path="/" 
-            element={user ? <Navigate to="/dashboard" /> : <LandingPage />} 
+            element={
+              user ? (
+                <Navigate to="/dashboard" replace />
+              ) : (
+                <LandingPage />
+              )
+            } 
           />
           
           {/* Auth sayfası */}
           <Route 
             path="/auth" 
-            element={!user ? <AuthPage /> : <Navigate to="/dashboard" />} 
+            element={
+              user ? (
+                <Navigate to="/dashboard" replace />
+              ) : (
+                <AuthPage />
+              )
+            } 
           />
           
-          {/* Korumalı sayfalar */}
-          <Route
-            path="/*"
+          {/* Dashboard ve diğer korumalı sayfalar */}
+          <Route 
+            path="/dashboard" 
             element={
               <ProtectedRoute>
                 <Layout>
-                  <Routes>
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/mining" element={<MiningPage />} />
-                    <Route path="/packages" element={<PackagesPage />} />
-                    <Route path="/profile" element={<ProfilePage />} />
-                    <Route path="/admin" element={<AdminPage />} />
-                    <Route path="/withdrawal" element={<WithdrawalPage />} />
-                    {/* Dashboard'a yönlendirme */}
-                    <Route path="*" element={<Navigate to="/dashboard" />} />
-                  </Routes>
+                  <Dashboard />
                 </Layout>
               </ProtectedRoute>
-            }
+            } 
+          />
+          
+          <Route 
+            path="/mining" 
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <MiningPage />
+                </Layout>
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/packages" 
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <PackagesPage />
+                </Layout>
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/profile" 
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <ProfilePage />
+                </Layout>
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/admin" 
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <AdminPage />
+                </Layout>
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/withdrawal" 
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <WithdrawalPage />
+                </Layout>
+              </ProtectedRoute>
+            } 
+          />
+          
+          {/* 404 sayfası - bilinmeyen route'lar için */}
+          <Route 
+            path="*" 
+            element={
+              user ? (
+                <Navigate to="/dashboard" replace />
+              ) : (
+                <Navigate to="/" replace />
+              )
+            } 
           />
         </Routes>
       </div>
