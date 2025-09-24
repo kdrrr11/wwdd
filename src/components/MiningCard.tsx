@@ -44,11 +44,11 @@ export const MiningCard: React.FC<MiningCardProps> = ({
       const seconds = Math.floor(elapsed % 60);
       
       if (hours > 0) {
-        setTimeElapsed(`${hours}h ${minutes}m ${seconds}s`);
+        setTimeElapsed(`${hours}sa ${minutes}dk ${seconds}sn`);
       } else if (minutes > 0) {
-        setTimeElapsed(`${minutes}m ${seconds}s`);
+        setTimeElapsed(`${minutes}dk ${seconds}sn`);
       } else {
-        setTimeElapsed(`${seconds}s`);
+        setTimeElapsed(`${seconds}sn`);
       }
     }, 1000);
 
@@ -100,12 +100,12 @@ export const MiningCard: React.FC<MiningCardProps> = ({
             {isActive ? (
               <>
                 <Square className="h-3 w-3 md:h-4 md:w-4" />
-                <span className="hidden sm:inline">Stop</span>
+                <span className="hidden sm:inline">Durdur</span>
               </>
             ) : (
               <>
                 <Play className="h-3 w-3 md:h-4 md:w-4" />
-                <span className="hidden sm:inline">Start</span>
+                <span className="hidden sm:inline">Başlat</span>
               </>
             )}
           </button>
@@ -130,7 +130,7 @@ export const MiningCard: React.FC<MiningCardProps> = ({
               <div className="bg-gray-700/30 rounded-lg p-3">
                 <div className="flex items-center space-x-2 mb-1">
                   <Zap className="h-3 w-3 text-blue-400" />
-                  <p className="text-gray-400 text-xs">Hash Rate</p>
+                  <p className="text-gray-400 text-xs">Hash Hızı</p>
                 </div>
                 <p className="text-white font-semibold text-xs md:text-sm">
                   {formatHashRate(hashRate)}
@@ -140,7 +140,7 @@ export const MiningCard: React.FC<MiningCardProps> = ({
               <div className="bg-gray-700/30 rounded-lg p-3">
                 <div className="flex items-center space-x-2 mb-1">
                   <TrendingUp className="h-3 w-3 text-green-400" />
-                  <p className="text-gray-400 text-xs">Earnings</p>
+                  <p className="text-gray-400 text-xs">Kazanç</p>
                 </div>
                 <p className="text-green-400 font-semibold text-xs md:text-sm">
                   ${earnings.toFixed(6)}
@@ -152,7 +152,7 @@ export const MiningCard: React.FC<MiningCardProps> = ({
             {timeElapsed && (
               <div className="bg-gray-700/30 rounded-lg p-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-400 text-xs">Mining Time</span>
+                  <span className="text-gray-400 text-xs">Madencilik Süresi</span>
                   <span className="text-white font-medium text-xs">{timeElapsed}</span>
                 </div>
               </div>
@@ -179,7 +179,7 @@ export const MiningCard: React.FC<MiningCardProps> = ({
           <div className="text-center py-6">
             <div className="flex items-center justify-center space-x-2 text-gray-400 mb-2">
               <TrendingUp className="h-4 w-4" />
-              <span className="text-sm">Last Session Earnings</span>
+              <span className="text-sm">Son Oturum Kazancı</span>
             </div>
             <p className="text-green-400 font-semibold text-lg">${earnings.toFixed(6)}</p>
           </div>
@@ -191,8 +191,8 @@ export const MiningCard: React.FC<MiningCardProps> = ({
             <div className="w-12 h-12 rounded-full bg-gray-700/50 flex items-center justify-center mx-auto mb-3">
               <Play className="h-6 w-6 text-gray-500" />
             </div>
-            <p className="text-gray-400 text-sm">Start mining to earn {coin.symbol}</p>
-            <p className="text-gray-500 text-xs mt-1">Base rate: {formatHashRate(coin.baseHashRate)}</p>
+            <p className="text-gray-400 text-sm">{coin.symbol} kazanmak için madenciliği başlatın</p>
+            <p className="text-gray-500 text-xs mt-1">Temel hız: {formatHashRate(coin.baseHashRate)}</p>
           </div>
         )}
       </div>
