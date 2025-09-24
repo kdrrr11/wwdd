@@ -43,17 +43,17 @@ export const WithdrawalPage: React.FC = () => {
     const withdrawalAmount = parseFloat(amount);
     
     if (withdrawalAmount < minWithdrawal) {
-      toast.error(`Minimum withdrawal amount is $${minWithdrawal}`);
+      toast.error(`Minimum para çekme tutarı $${minWithdrawal}'dır`);
       return;
     }
 
     if (withdrawalAmount > maxWithdrawal) {
-      toast.error('Insufficient balance');
+      toast.error('Yetersiz bakiye');
       return;
     }
 
     if (!walletAddress.trim()) {
-      toast.error('Please enter a valid wallet address');
+      toast.error('Lütfen geçerli bir cüzdan adresi girin');
       return;
     }
 
@@ -70,11 +70,11 @@ export const WithdrawalPage: React.FC = () => {
       const requestsRef = ref(database, 'withdrawalRequests');
       await push(requestsRef, newRequest);
 
-      toast.success('Withdrawal request submitted successfully!');
+      toast.success('Para çekme talebi başarıyla gönderildi!');
       setAmount('');
       setWalletAddress('');
     } catch (error) {
-      toast.error('Failed to submit withdrawal request');
+      toast.error('Para çekme talebi gönderilemedi');
     }
     setLoading(false);
   };
@@ -99,11 +99,21 @@ export const WithdrawalPage: React.FC = () => {
     }
   };
 
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'pending': return 'Beklemede';
+      case 'approved': return 'Onaylandı';
+      case 'completed': return 'Tamamlandı';
+      case 'rejected': return 'Reddedildi';
+      default: return status;
+    }
+  };
+
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-white mb-2">Withdrawal</h1>
-        <p className="text-gray-400">Request withdrawal of your earnings</p>
+        <h1 className="text-3xl font-bold text-white mb-2">Para Çekme</h1>
+        <p className="text-gray-400">Kazançlarınızı çekme talebi gönderin</p>
       </div>
 
       {/* Balance Info */}
@@ -113,7 +123,7 @@ export const WithdrawalPage: React.FC = () => {
             <DollarSign className="h-8 w-8 text-green-400" />
           </div>
           <div>
-            <p className="text-sm text-gray-400">Available Balance</p>
+            <p className="text-sm text-gray-400">Kullanılabilir Bakiye</p>
             <p className="text-3xl font-bold text-white">${user?.balance.toFixed(2) || '0.00'}</p>
           </div>
         </div>
@@ -121,12 +131,12 @@ export const WithdrawalPage: React.FC = () => {
 
       {/* Withdrawal Form */}
       <div className="bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-gray-700">
-        <h3 className="text-xl font-semibold text-white mb-6">Request Withdrawal</h3>
+        <h3 className="text-xl font-semibold text-white mb-6">Para Çekme Talebi</h3>
         
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label htmlFor="amount" className="block text-sm font-medium text-gray-300 mb-2">
-              Amount (USD)
+              Tutar (USD)
             </label>
             <input
               id="amount"
@@ -144,7 +154,7 @@ export const WithdrawalPage: React.FC = () => {
 
           <div>
             <label htmlFor="wallet" className="block text-sm font-medium text-gray-300 mb-2">
-              TRC20 Wallet Address
+              TRC20 Cüzdan Adresi
             </label>
             <input
               id="wallet"
@@ -152,18 +162,18 @@ export const WithdrawalPage: React.FC = () => {
               value={walletAddress}
               onChange={(e) => setWalletAddress(e.target.value)}
               className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Enter your TRC20 wallet address"
+              placeholder="TRC20 cüzdan adresinizi girin"
               required
             />
           </div>
 
           <div className="bg-blue-600/20 border border-blue-500/30 rounded-lg p-4">
-            <h4 className="text-blue-400 font-semibold mb-2">Withdrawal Information</h4>
+            <h4 className="text-blue-400 font-semibold mb-2">Para Çekme Bilgileri</h4>
             <ul className="text-sm text-gray-300 space-y-1">
-              <li>• Minimum withdrawal: ${minWithdrawal}</li>
-              <li>• Processing time: 24-48 hours</li>
-              <li>• Withdrawals are processed in USDT (TRC20)</li>
-              <li>• Make sure your wallet address is correct</li>
+              <li>• Minimum para çekme: ${minWithdrawal}</li>
+              <li>• İşlem süresi: 24-48 saat</li>
+              <li>• Para çekme işlemleri USDT (TRC20) olarak yapılır</li>
+              <li>• Cüzdan adresinizin doğru olduğundan emin olun</li>
             </ul>
           </div>
 
@@ -172,19 +182,19 @@ export const WithdrawalPage: React.FC = () => {
             disabled={loading || !amount || !walletAddress || parseFloat(amount || '0') < minWithdrawal}
             className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-green-600 to-blue-600 text-white font-semibold hover:from-green-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
-            {loading ? 'Submitting...' : 'Request Withdrawal'}
+            {loading ? 'Gönderiliyor...' : 'Para Çekme Talebi'}
           </button>
         </form>
       </div>
 
       {/* Withdrawal History */}
       <div className="bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-gray-700">
-        <h3 className="text-xl font-semibold text-white mb-6">Withdrawal History</h3>
+        <h3 className="text-xl font-semibold text-white mb-6">Para Çekme Geçmişi</h3>
         
         {withdrawalRequests.length === 0 ? (
           <div className="text-center py-8">
             <DollarSign className="h-12 w-12 text-gray-600 mx-auto mb-4" />
-            <p className="text-gray-400">No withdrawal requests yet</p>
+            <p className="text-gray-400">Henüz para çekme talebi yok</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -194,22 +204,22 @@ export const WithdrawalPage: React.FC = () => {
                   <div>
                     <p className="text-white font-semibold">${request.amount.toFixed(2)}</p>
                     <p className="text-sm text-gray-400">
-                      {format(new Date(request.requestedAt), 'MMM dd, yyyy HH:mm')}
+                      {format(new Date(request.requestedAt), 'dd MMM yyyy HH:mm')}
                     </p>
                   </div>
                   <div className={`flex items-center space-x-2 px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(request.status)}`}>
                     {getStatusIcon(request.status)}
-                    <span className="capitalize">{request.status}</span>
+                    <span>{getStatusText(request.status)}</span>
                   </div>
                 </div>
                 
                 <div className="text-sm text-gray-400">
-                  <p className="mb-1">Wallet: {request.walletAddress}</p>
+                  <p className="mb-1">Cüzdan: {request.walletAddress}</p>
                   {request.adminNotes && (
-                    <p className="text-yellow-400">Note: {request.adminNotes}</p>
+                    <p className="text-yellow-400">Not: {request.adminNotes}</p>
                   )}
                   {request.processedAt && (
-                    <p>Processed: {format(new Date(request.processedAt), 'MMM dd, yyyy HH:mm')}</p>
+                    <p>İşlenme: {format(new Date(request.processedAt), 'dd MMM yyyy HH:mm')}</p>
                   )}
                 </div>
               </div>
