@@ -102,7 +102,9 @@
             color: #3b82f6;
         }
         
-        .cta-button {
+        .cta-button,
+        .primary-btn,
+        .package-btn {
             background: linear-gradient(135deg, #3b82f6, #8b5cf6);
             color: white;
             padding: 0.75rem 1.5rem;
@@ -113,9 +115,13 @@
             transition: transform 0.2s, box-shadow 0.2s;
             text-decoration: none;
             display: inline-block;
+            font-family: inherit;
+            font-size: inherit;
         }
         
-        .cta-button:hover {
+        .cta-button:hover,
+        .primary-btn:hover,
+        .package-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
         }
@@ -230,6 +236,7 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            font-family: inherit;
         }
         
         .primary-btn:hover {
@@ -537,6 +544,7 @@
             text-decoration: none;
             display: inline-block;
             text-align: center;
+            font-family: inherit;
         }
         
         .package-btn:hover {
@@ -720,7 +728,7 @@
                 </ul>
                 
                 <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
-                <a href="/auth" class="cta-button">Ücretsiz Başla</a>
+                <button class="cta-button" onclick="goToAuth()">Ücretsiz Başla</button>
             </nav>
             
             <!-- Mobile Menu -->
@@ -731,7 +739,7 @@
                     <li><a href="#paketler" onclick="closeMobileMenu()">Paketler</a></li>
                     <li><a href="#sss" onclick="closeMobileMenu()">SSS</a></li>
                 </ul>
-                <a href="/auth" class="cta-button" onclick="closeMobileMenu()">Ücretsiz Başla</a>
+                <button class="cta-button" onclick="closeMobileMenu(); goToAuth()">Ücretsiz Başla</button>
             </div>
         </div>
     </header>
@@ -747,9 +755,9 @@
                 </p>
                 
                 <div class="hero-buttons">
-                    <a href="/auth" class="primary-btn">
+                    <button class="primary-btn" onclick="goToAuth()">
                         🎁 Ücretsiz $25 Bonus Al
-                    </a>
+                    </button>
                     <a href="#özellikler" class="secondary-btn">Nasıl Çalışır?</a>
                 </div>
                 
@@ -904,7 +912,7 @@
                         <li><span class="checkmark">✓</span> Haftalık para çekme</li>
                         <li><span class="checkmark">✓</span> 7/24 destek</li>
                     </ul>
-                    <a href="/auth" class="package-btn">Paketi Seç</a>
+                    <button class="package-btn" onclick="goToAuth()">Paketi Seç</button>
                 </div>
                 
                 <div class="package-card popular">
@@ -922,7 +930,7 @@
                         <li><span class="checkmark">✓</span> Öncelikli destek</li>
                         <li><span class="checkmark">✓</span> Bonus %20 kazanç</li>
                     </ul>
-                    <a href="/auth" class="package-btn">Paketi Seç</a>
+                    <button class="package-btn" onclick="goToAuth()">Paketi Seç</button>
                 </div>
                 
                 <div class="package-card">
@@ -939,7 +947,7 @@
                         <li><span class="checkmark">✓</span> VIP destek</li>
                         <li><span class="checkmark">✓</span> Bonus %35 kazanç</li>
                     </ul>
-                    <a href="/auth" class="package-btn">Paketi Seç</a>
+                    <button class="package-btn" onclick="goToAuth()">Paketi Seç</button>
                 </div>
             </div>
         </div>
@@ -1126,66 +1134,32 @@
             observer.observe(card);
         });
 
-        // Handle auth buttons - redirect to auth page
+        // Handle auth buttons - redirect to auth.html
         function goToAuth() {
-            // Tam sayfa yeniden yönlendirmesi
-            window.location.href = '/auth';
+            // Static HTML'e yönlendirme
+            window.location.href = 'auth.html';
         }
 
-        // Handle external auth links with loading indication and redirect
-        document.querySelectorAll('a[href="/auth"]').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault(); // Varsayılan davranışı engelle
-                
-                // Add loading state
-                const originalText = this.innerHTML;
-                this.innerHTML = this.innerHTML.includes('🎁') ? '🔄 Yönlendiriliyor...' : 'Yönlendiriliyor...';
-                this.style.opacity = '0.7';
-                this.style.pointerEvents = 'none';
-                
-                // Redirect after a short delay for visual feedback
-                setTimeout(() => {
-                    window.location.href = '/auth';
-                }, 500);
-            });
-        });
-
-        // Alternative: Add onclick handlers to buttons
+        // Alternative: Add onclick handlers to buttons (backup method)
         document.addEventListener('DOMContentLoaded', function() {
-            // Header button
-            const headerBtn = document.querySelector('.nav .cta-button');
-            if (headerBtn) {
-                headerBtn.onclick = function(e) {
+            // Tüm auth butonlarına onclick handler ekle
+            const authButtons = document.querySelectorAll('[onclick*="goToAuth"]');
+            authButtons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
                     e.preventDefault();
-                    goToAuth();
-                };
-            }
-            
-            // Hero button
-            const heroBtn = document.querySelector('.primary-btn');
-            if (heroBtn) {
-                heroBtn.onclick = function(e) {
-                    e.preventDefault();
-                    goToAuth();
-                };
-            }
-            
-            // Package buttons
-            document.querySelectorAll('.package-btn').forEach(btn => {
-                btn.onclick = function(e) {
-                    e.preventDefault();
-                    goToAuth();
-                };
+                    
+                    // Loading state
+                    const originalText = this.innerHTML;
+                    this.innerHTML = this.innerHTML.includes('🎁') ? '🔄 Yönlendiriliyor...' : 'Yönlendiriliyor...';
+                    this.style.opacity = '0.7';
+                    this.style.pointerEvents = 'none';
+                    
+                    // Redirect after short delay
+                    setTimeout(() => {
+                        window.location.href = 'auth.html';
+                    }, 500);
+                });
             });
-            
-            // Mobile menu button
-            const mobileBtn = document.querySelector('.mobile-menu .cta-button');
-            if (mobileBtn) {
-                mobileBtn.onclick = function(e) {
-                    e.preventDefault();
-                    goToAuth();
-                };
-            }
         });
     </script>
 </body>
