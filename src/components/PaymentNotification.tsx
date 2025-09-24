@@ -37,10 +37,10 @@ export const PaymentNotification: React.FC<PaymentNotificationProps> = ({
       const notificationsRef = ref(database, 'paymentNotifications');
       await push(notificationsRef, notification);
 
-      toast.success('Payment notification sent! We will review it within 24 hours.');
+      toast.success('Ödeme bildirimi gönderildi! 24 saat içinde incelenecek.');
       onClose();
     } catch (error) {
-      toast.error('Failed to send payment notification');
+      toast.error('Ödeme bildirimi gönderilemedi');
     }
     setLoading(false);
   };
@@ -50,25 +50,25 @@ export const PaymentNotification: React.FC<PaymentNotificationProps> = ({
       <div className="bg-gray-800 rounded-xl p-6 max-w-md w-full border border-gray-700">
         <div className="flex items-center space-x-3 mb-6">
           <CreditCard className="h-6 w-6 text-blue-400" />
-          <h3 className="text-xl font-semibold text-white">Payment Notification</h3>
+          <h3 className="text-xl font-semibold text-white">Ödeme Bildirimi</h3>
         </div>
 
         <div className="mb-6">
           <div className="bg-gray-700/50 rounded-lg p-4 mb-4">
-            <h4 className="text-white font-medium mb-2">{selectedPackage.name} Package</h4>
+            <h4 className="text-white font-medium mb-2">{selectedPackage.name} Paketi</h4>
             <p className="text-2xl font-bold text-green-400">${selectedPackage.price}</p>
-            <p className="text-sm text-gray-400">{selectedPackage.duration} days duration</p>
+            <p className="text-sm text-gray-400">{selectedPackage.duration} gün süresi</p>
           </div>
 
           <div className="bg-blue-600/20 border border-blue-500/30 rounded-lg p-4">
             <div className="flex items-start space-x-2">
               <AlertCircle className="h-5 w-5 text-blue-400 mt-0.5" />
               <div className="text-sm text-blue-200">
-                <p className="font-medium mb-1">Payment Instructions:</p>
-                <p>1. Send ${selectedPackage.price} USDT (TRC20) to our wallet</p>
-                <p>2. Enter transaction hash below (optional)</p>
-                <p>3. Click "Notify Payment" to submit</p>
-                <p>4. Wait for admin approval (usually within 24 hours)</p>
+                <p className="font-medium mb-1">Ödeme Talimatları:</p>
+                <p>1. Cüzdanımıza ${selectedPackage.price} USDT (TRC20) gönderin</p>
+                <p>2. Aşağıya işlem hash'ini girin (isteğe bağlı)</p>
+                <p>3. "Ödeme Bildir" butonuna tıklayın</p>
+                <p>4. Admin onayını bekleyin (genellikle 24 saat içinde)</p>
               </div>
             </div>
           </div>
@@ -77,7 +77,7 @@ export const PaymentNotification: React.FC<PaymentNotificationProps> = ({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="txHash" className="block text-sm font-medium text-gray-300 mb-2">
-              Transaction Hash (Optional)
+              İşlem Hash'i (İsteğe Bağlı)
             </label>
             <input
               id="txHash"
@@ -85,7 +85,7 @@ export const PaymentNotification: React.FC<PaymentNotificationProps> = ({
               value={txHash}
               onChange={(e) => setTxHash(e.target.value)}
               className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Enter transaction hash if available"
+              placeholder="Varsa işlem hash'ini girin"
             />
           </div>
 
@@ -95,14 +95,14 @@ export const PaymentNotification: React.FC<PaymentNotificationProps> = ({
               onClick={onClose}
               className="flex-1 py-3 px-4 rounded-lg bg-gray-700 hover:bg-gray-600 text-white font-medium transition-colors"
             >
-              Cancel
+              İptal
             </button>
             <button
               type="submit"
               disabled={loading}
               className="flex-1 py-3 px-4 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
-              {loading ? 'Sending...' : 'Notify Payment'}
+              {loading ? 'Gönderiliyor...' : 'Ödeme Bildir'}
             </button>
           </div>
         </form>
