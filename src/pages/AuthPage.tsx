@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
-import { Pickaxe, Eye, EyeOff } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Pickaxe, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export const AuthPage: React.FC = () => {
@@ -40,12 +40,25 @@ export const AuthPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
+        {/* Ana sayfaya dön butonu */}
+        <div className="mb-6">
+          <Link 
+            to="/" 
+            className="flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-colors group"
+          >
+            <ArrowLeft className="h-4 w-4 group-hover:translate-x-[-2px] transition-transform" />
+            <span>Ana Sayfaya Dön</span>
+          </Link>
+        </div>
+        
         <div className="bg-gray-800/50 backdrop-blur-md rounded-2xl p-8 border border-gray-700">
           <div className="text-center mb-8">
             <div className="flex items-center justify-center mb-4">
-              <Pickaxe className="h-12 w-12 text-blue-400" />
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
+                <Pickaxe className="h-7 w-7 text-white" />
+              </div>
             </div>
-            <h1 className="text-3xl font-bold text-white mb-2">CloudMiner</h1>
+            <h1 className="text-3xl font-bold text-white mb-2">FreeCloudMiner</h1>
             <p className="text-gray-400">
               {isLogin ? 'Madenciliğe tekrar hoşgeldiniz' : 'Madencilik yolculuğunuzu başlatın'}
             </p>
@@ -61,7 +74,7 @@ export const AuthPage: React.FC = () => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 placeholder="E-posta adresinizi girin"
                 required
               />
@@ -77,14 +90,14 @@ export const AuthPage: React.FC = () => {
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 pr-12 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-3 pr-12 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   placeholder="Şifrenizi girin"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
                 >
                   {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
@@ -94,9 +107,16 @@ export const AuthPage: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-[1.02] active:scale-[0.98]"
             >
-              {loading ? 'İşleniyor...' : (isLogin ? 'Giriş Yap' : 'Kayıt Ol')}
+              {loading ? (
+                <div className="flex items-center justify-center space-x-2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  <span>İşleniyor...</span>
+                </div>
+              ) : (
+                isLogin ? 'Giriş Yap' : 'Kayıt Ol'
+              )}
             </button>
           </form>
 
@@ -105,7 +125,7 @@ export const AuthPage: React.FC = () => {
               {isLogin ? "Hesabınız yok mu?" : 'Zaten hesabınız var mı?'}
               <button
                 onClick={() => setIsLogin(!isLogin)}
-                className="ml-2 text-blue-400 hover:text-blue-300 font-medium"
+                className="ml-2 text-blue-400 hover:text-blue-300 font-medium transition-colors"
               >
                 {isLogin ? 'Kayıt Ol' : 'Giriş Yap'}
               </button>
@@ -113,8 +133,11 @@ export const AuthPage: React.FC = () => {
           </div>
 
           {!isLogin && (
-            <div className="mt-6 p-4 rounded-lg bg-blue-600/20 border border-blue-500/30">
-              <h4 className="text-blue-400 font-semibold mb-2">Ücretsiz Deneme Dahil!</h4>
+            <div className="mt-6 p-4 rounded-lg bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/30">
+              <h4 className="text-blue-400 font-semibold mb-2 flex items-center space-x-2">
+                <span>🎁</span>
+                <span>Ücretsiz Deneme Dahil!</span>
+              </h4>
               <ul className="text-sm text-gray-300 space-y-1">
                 <li>• 3 ay ücretsiz madencilik</li>
                 <li>• 25 USDT'ye kadar kazanç</li>
@@ -123,6 +146,24 @@ export const AuthPage: React.FC = () => {
               </ul>
             </div>
           )}
+        </div>
+        
+        {/* Güven göstergeleri */}
+        <div className="mt-8 text-center">
+          <div className="flex items-center justify-center space-x-6 text-gray-500 text-sm">
+            <div className="flex items-center space-x-1">
+              <span>🔒</span>
+              <span>SSL Güvenli</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <span>⚡</span>
+              <span>Hızlı İşlem</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <span>🛡️</span>
+              <span>Güvenilir</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
