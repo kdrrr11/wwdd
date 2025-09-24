@@ -1126,22 +1126,66 @@
             observer.observe(card);
         });
 
-        // Handle external auth links with loading indication
+        // Handle auth buttons - redirect to auth page
+        function goToAuth() {
+            // Tam sayfa yeniden yönlendirmesi
+            window.location.href = '/auth';
+        }
+
+        // Handle external auth links with loading indication and redirect
         document.querySelectorAll('a[href="/auth"]').forEach(link => {
             link.addEventListener('click', function(e) {
+                e.preventDefault(); // Varsayılan davranışı engelle
+                
                 // Add loading state
                 const originalText = this.innerHTML;
                 this.innerHTML = this.innerHTML.includes('🎁') ? '🔄 Yönlendiriliyor...' : 'Yönlendiriliyor...';
                 this.style.opacity = '0.7';
                 this.style.pointerEvents = 'none';
                 
-                // Reset after a short delay if navigation fails
+                // Redirect after a short delay for visual feedback
                 setTimeout(() => {
-                    this.innerHTML = originalText;
-                    this.style.opacity = '1';
-                    this.style.pointerEvents = 'auto';
-                }, 3000);
+                    window.location.href = '/auth';
+                }, 500);
             });
+        });
+
+        // Alternative: Add onclick handlers to buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            // Header button
+            const headerBtn = document.querySelector('.nav .cta-button');
+            if (headerBtn) {
+                headerBtn.onclick = function(e) {
+                    e.preventDefault();
+                    goToAuth();
+                };
+            }
+            
+            // Hero button
+            const heroBtn = document.querySelector('.primary-btn');
+            if (heroBtn) {
+                heroBtn.onclick = function(e) {
+                    e.preventDefault();
+                    goToAuth();
+                };
+            }
+            
+            // Package buttons
+            document.querySelectorAll('.package-btn').forEach(btn => {
+                btn.onclick = function(e) {
+                    e.preventDefault();
+                    goToAuth();
+                };
+            });
+            
+            // Mobile menu button
+            const mobileBtn = document.querySelector('.mobile-menu .cta-button');
+            if (mobileBtn) {
+                mobileBtn.onclick = function(e) {
+                    e.preventDefault();
+                    goToAuth();
+                };
+            }
         });
     </script>
 </body>
