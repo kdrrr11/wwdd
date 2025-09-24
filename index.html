@@ -130,6 +130,33 @@
             cursor: pointer;
         }
         
+        .mobile-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(59, 130, 246, 0.1);
+            padding: 1rem 0;
+        }
+        
+        .mobile-menu.active {
+            display: block;
+        }
+        
+        .mobile-menu .nav-links {
+            flex-direction: column;
+            gap: 1rem;
+            padding: 1rem 2rem;
+        }
+        
+        .mobile-menu .cta-button {
+            margin: 1rem 2rem;
+            text-align: center;
+        }
+        
         /* Hero Section */
         .hero {
             padding: 8rem 0 4rem;
@@ -507,6 +534,9 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
         }
         
         .package-btn:hover {
@@ -546,6 +576,7 @@
             padding: 0 1.5rem 1.5rem;
             color: #cbd5e1;
             line-height: 1.7;
+            display: none;
         }
         
         /* Footer */
@@ -688,9 +719,20 @@
                     <li><a href="#sss">SSS</a></li>
                 </ul>
                 
-                <button class="mobile-menu-btn">☰</button>
-                <a href="#başla" class="cta-button">Ücretsiz Başla</a>
+                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+                <a href="/auth" class="cta-button">Ücretsiz Başla</a>
             </nav>
+            
+            <!-- Mobile Menu -->
+            <div class="mobile-menu" id="mobileMenu">
+                <ul class="nav-links">
+                    <li><a href="#madencilik" onclick="closeMobileMenu()">Madencilik</a></li>
+                    <li><a href="#özellikler" onclick="closeMobileMenu()">Özellikler</a></li>
+                    <li><a href="#paketler" onclick="closeMobileMenu()">Paketler</a></li>
+                    <li><a href="#sss" onclick="closeMobileMenu()">SSS</a></li>
+                </ul>
+                <a href="/auth" class="cta-button" onclick="closeMobileMenu()">Ücretsiz Başla</a>
+            </div>
         </div>
     </header>
 
@@ -705,7 +747,7 @@
                 </p>
                 
                 <div class="hero-buttons">
-                    <a href="#başla" class="primary-btn">
+                    <a href="/auth" class="primary-btn">
                         🎁 Ücretsiz $25 Bonus Al
                     </a>
                     <a href="#özellikler" class="secondary-btn">Nasıl Çalışır?</a>
@@ -862,7 +904,7 @@
                         <li><span class="checkmark">✓</span> Haftalık para çekme</li>
                         <li><span class="checkmark">✓</span> 7/24 destek</li>
                     </ul>
-                    <button class="package-btn">Paketi Seç</button>
+                    <a href="/auth" class="package-btn">Paketi Seç</a>
                 </div>
                 
                 <div class="package-card popular">
@@ -880,7 +922,7 @@
                         <li><span class="checkmark">✓</span> Öncelikli destek</li>
                         <li><span class="checkmark">✓</span> Bonus %20 kazanç</li>
                     </ul>
-                    <button class="package-btn">Paketi Seç</button>
+                    <a href="/auth" class="package-btn">Paketi Seç</a>
                 </div>
                 
                 <div class="package-card">
@@ -897,7 +939,7 @@
                         <li><span class="checkmark">✓</span> VIP destek</li>
                         <li><span class="checkmark">✓</span> Bonus %35 kazanç</li>
                     </ul>
-                    <button class="package-btn">Paketi Seç</button>
+                    <a href="/auth" class="package-btn">Paketi Seç</a>
                 </div>
             </div>
         </div>
@@ -913,7 +955,7 @@
             
             <div class="faq-container">
                 <div class="faq-item">
-                    <div class="faq-question">
+                    <div class="faq-question" onclick="toggleFaq(this)">
                         <span>Kripto para madenciliği nedir?</span>
                         <span>+</span>
                     </div>
@@ -925,7 +967,7 @@
                 </div>
                 
                 <div class="faq-item">
-                    <div class="faq-question">
+                    <div class="faq-question" onclick="toggleFaq(this)">
                         <span>Ücretsiz deneme nasıl çalışır?</span>
                         <span>+</span>
                     </div>
@@ -936,7 +978,7 @@
                 </div>
                 
                 <div class="faq-item">
-                    <div class="faq-question">
+                    <div class="faq-question" onclick="toggleFaq(this)">
                         <span>Kazançlarım ne zaman ödenir?</span>
                         <span>+</span>
                     </div>
@@ -947,7 +989,7 @@
                 </div>
                 
                 <div class="faq-item">
-                    <div class="faq-question">
+                    <div class="faq-question" onclick="toggleFaq(this)">
                         <span>Hangi kripto paraların madenciliğini yapabilirim?</span>
                         <span>+</span>
                     </div>
@@ -958,7 +1000,7 @@
                 </div>
                 
                 <div class="faq-item">
-                    <div class="faq-question">
+                    <div class="faq-question" onclick="toggleFaq(this)">
                         <span>Platform güvenli mi?</span>
                         <span>+</span>
                     </div>
@@ -992,41 +1034,61 @@
             </div>
             
             <div class="footer-bottom">
-                <p>&copy; 2024 FreeCloudMiner. Tüm hakları saklıdır. | Gizlilik Politikası | Kullanım Şartları</p>
+                <p>&copy; 2024 FreeCloudMiner. Tüm hakları saklıdır. | 
+                <a href="#gizlilik" style="color: #64748b;">Gizlilik Politikası</a> | 
+                <a href="#kullanim" style="color: #64748b;">Kullanım Şartları</a></p>
             </div>
         </div>
     </footer>
 
     <script>
-        // Simple FAQ toggle functionality
-        document.querySelectorAll('.faq-question').forEach(question => {
-            question.addEventListener('click', () => {
-                const faqItem = question.parentElement;
-                const answer = faqItem.querySelector('.faq-answer');
-                const isOpen = answer.style.display === 'block';
-                
-                // Close all answers first
-                document.querySelectorAll('.faq-answer').forEach(a => a.style.display = 'none');
-                document.querySelectorAll('.faq-question span:last-child').forEach(s => s.textContent = '+');
-                
-                // Toggle current answer
-                if (!isOpen) {
-                    answer.style.display = 'block';
-                    question.querySelector('span:last-child').textContent = '-';
-                }
-            });
-        });
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            const menuBtn = document.querySelector('.mobile-menu-btn');
+            
+            mobileMenu.classList.toggle('active');
+            menuBtn.innerHTML = mobileMenu.classList.contains('active') ? '✕' : '☰';
+        }
+
+        function closeMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            const menuBtn = document.querySelector('.mobile-menu-btn');
+            
+            mobileMenu.classList.remove('active');
+            menuBtn.innerHTML = '☰';
+        }
+
+        // FAQ toggle functionality
+        function toggleFaq(element) {
+            const faqItem = element.parentElement;
+            const answer = faqItem.querySelector('.faq-answer');
+            const isOpen = answer.style.display === 'block';
+            
+            // Close all answers first
+            document.querySelectorAll('.faq-answer').forEach(a => a.style.display = 'none');
+            document.querySelectorAll('.faq-question span:last-child').forEach(s => s.textContent = '+');
+            
+            // Toggle current answer
+            if (!isOpen) {
+                answer.style.display = 'block';
+                element.querySelector('span:last-child').textContent = '-';
+            }
+        }
 
         // Smooth scroll for navigation links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
+                const targetId = this.getAttribute('href').substring(1);
+                const target = document.getElementById(targetId);
+                
                 if (target) {
                     target.scrollIntoView({
                         behavior: 'smooth',
                         block: 'start'
                     });
+                    closeMobileMenu(); // Close mobile menu after clicking
                 }
             });
         });
@@ -1062,6 +1124,24 @@
             card.style.transform = 'translateY(30px)';
             card.style.transition = 'all 0.6s ease-out';
             observer.observe(card);
+        });
+
+        // Handle external auth links with loading indication
+        document.querySelectorAll('a[href="/auth"]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                // Add loading state
+                const originalText = this.innerHTML;
+                this.innerHTML = this.innerHTML.includes('🎁') ? '🔄 Yönlendiriliyor...' : 'Yönlendiriliyor...';
+                this.style.opacity = '0.7';
+                this.style.pointerEvents = 'none';
+                
+                // Reset after a short delay if navigation fails
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.style.opacity = '1';
+                    this.style.pointerEvents = 'auto';
+                }, 3000);
+            });
         });
     </script>
 </body>
