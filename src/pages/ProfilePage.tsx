@@ -13,20 +13,20 @@ export const ProfilePage: React.FC = () => {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-white mb-2">Profile</h1>
-        <p className="text-gray-400">Manage your account and view your mining statistics</p>
+        <h1 className="text-3xl font-bold text-white mb-2">Profil</h1>
+        <p className="text-gray-400">Hesabınızı yönetin ve madencilik istatistiklerinizi görün</p>
       </div>
 
       {/* User Information */}
       <div className="bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-gray-700">
-        <h3 className="text-xl font-semibold text-white mb-6">Account Information</h3>
+        <h3 className="text-xl font-semibold text-white mb-6">Hesap Bilgileri</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="flex items-center space-x-4">
             <div className="p-3 rounded-lg bg-blue-600/20">
               <User className="h-6 w-6 text-blue-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-400">Email</p>
+              <p className="text-sm text-gray-400">E-posta</p>
               <p className="text-white font-medium">{user.email}</p>
             </div>
           </div>
@@ -36,9 +36,9 @@ export const ProfilePage: React.FC = () => {
               <Calendar className="h-6 w-6 text-green-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-400">Member Since</p>
+              <p className="text-sm text-gray-400">Üyelik Tarihi</p>
               <p className="text-white font-medium">
-                {format(new Date(user.createdAt), 'MMM dd, yyyy')}
+                {format(new Date(user.createdAt), 'dd MMM yyyy')}
               </p>
             </div>
           </div>
@@ -47,14 +47,14 @@ export const ProfilePage: React.FC = () => {
 
       {/* Balance and Earnings */}
       <div className="bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-gray-700">
-        <h3 className="text-xl font-semibold text-white mb-6">Balance & Earnings</h3>
+        <h3 className="text-xl font-semibold text-white mb-6">Bakiye ve Kazançlar</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="flex items-center space-x-4">
             <div className="p-3 rounded-lg bg-green-600/20">
               <DollarSign className="h-6 w-6 text-green-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-400">Total Balance</p>
+              <p className="text-sm text-gray-400">Toplam Bakiye</p>
               <p className="text-2xl font-bold text-white">${user.balance.toFixed(2)}</p>
             </div>
           </div>
@@ -64,7 +64,7 @@ export const ProfilePage: React.FC = () => {
               <DollarSign className="h-6 w-6 text-blue-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-400">Trial Earnings</p>
+              <p className="text-sm text-gray-400">Deneme Kazancı</p>
               <p className="text-2xl font-bold text-white">${user.totalTrialEarnings.toFixed(2)}</p>
             </div>
           </div>
@@ -74,8 +74,8 @@ export const ProfilePage: React.FC = () => {
               <Package className="h-6 w-6 text-purple-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-400">Active Package</p>
-              <p className="text-xl font-bold text-white">{user.activePackage || 'Free Trial'}</p>
+              <p className="text-sm text-gray-400">Aktif Paket</p>
+              <p className="text-xl font-bold text-white">{user.activePackage || 'Ücretsiz Deneme'}</p>
             </div>
           </div>
         </div>
@@ -84,16 +84,16 @@ export const ProfilePage: React.FC = () => {
       {/* Trial Status */}
       {!user.activePackage && (
         <div className="bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-gray-700">
-          <h3 className="text-xl font-semibold text-white mb-6">Trial Status</h3>
+          <h3 className="text-xl font-semibold text-white mb-6">Deneme Durumu</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex items-center space-x-4">
               <div className="p-3 rounded-lg bg-blue-600/20">
                 <Clock className="h-6 w-6 text-blue-400" />
               </div>
               <div>
-                <p className="text-sm text-gray-400">Trial End Date</p>
+                <p className="text-sm text-gray-400">Deneme Bitiş Tarihi</p>
                 <p className="text-white font-medium">
-                  {user.trialEndDate ? format(new Date(user.trialEndDate), 'MMM dd, yyyy') : 'N/A'}
+                  {user.trialEndDate ? format(new Date(user.trialEndDate), 'dd MMM yyyy') : 'Belirtilmemiş'}
                 </p>
               </div>
             </div>
@@ -103,9 +103,9 @@ export const ProfilePage: React.FC = () => {
                 <Clock className={`h-6 w-6 ${isTrialActive ? 'text-green-400' : 'text-red-400'}`} />
               </div>
               <div>
-                <p className="text-sm text-gray-400">Status</p>
+                <p className="text-sm text-gray-400">Durum</p>
                 <p className={`font-medium ${isTrialActive ? 'text-green-400' : 'text-red-400'}`}>
-                  {isTrialActive ? 'Active' : 'Expired'}
+                  {isTrialActive ? 'Aktif' : 'Süresi Doldu'}
                 </p>
               </div>
             </div>
@@ -113,7 +113,7 @@ export const ProfilePage: React.FC = () => {
 
           <div className="mt-6">
             <div className="flex justify-between text-sm text-gray-400 mb-2">
-              <span>Trial Earnings Progress</span>
+              <span>Deneme Kazanç İlerlemesi</span>
               <span>${user.totalTrialEarnings.toFixed(2)} / $25.00</span>
             </div>
             <div className="w-full bg-gray-700 rounded-full h-2">
@@ -128,34 +128,34 @@ export const ProfilePage: React.FC = () => {
 
       {/* Account Actions */}
       <div className="bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-gray-700">
-        <h3 className="text-xl font-semibold text-white mb-6">Account Actions</h3>
+        <h3 className="text-xl font-semibold text-white mb-6">Hesap İşlemleri</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <button className="flex items-center justify-center space-x-2 p-4 rounded-lg bg-blue-600/20 border border-blue-500/30 hover:bg-blue-600/30 transition-colors">
             <Package className="h-5 w-5 text-blue-400" />
-            <span className="text-white font-medium">View Packages</span>
+            <span className="text-white font-medium">Paketleri Görüntüle</span>
           </button>
           
           <button className="flex items-center justify-center space-x-2 p-4 rounded-lg bg-green-600/20 border border-green-500/30 hover:bg-green-600/30 transition-colors">
             <DollarSign className="h-5 w-5 text-green-400" />
-            <span className="text-white font-medium">Request Withdrawal</span>
+            <span className="text-white font-medium">Para Çekme Talebi</span>
           </button>
         </div>
       </div>
 
       {/* Recent Activity */}
       <div className="bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-gray-700">
-        <h3 className="text-xl font-semibold text-white mb-6">Recent Activity</h3>
+        <h3 className="text-xl font-semibold text-white mb-6">Son Aktiviteler</h3>
         <div className="space-y-4">
           <div className="flex items-center justify-between p-4 rounded-lg bg-gray-700/50">
             <div className="flex items-center space-x-3">
               <div className="w-2 h-2 rounded-full bg-green-400"></div>
               <div>
-                <p className="text-white font-medium">Account Created</p>
-                <p className="text-sm text-gray-400">Free trial activated</p>
+                <p className="text-white font-medium">Hesap Oluşturuldu</p>
+                <p className="text-sm text-gray-400">Ücretsiz deneme etkinleştirildi</p>
               </div>
             </div>
             <p className="text-sm text-gray-400">
-              {format(new Date(user.createdAt), 'MMM dd, yyyy')}
+              {format(new Date(user.createdAt), 'dd MMM yyyy')}
             </p>
           </div>
         </div>
