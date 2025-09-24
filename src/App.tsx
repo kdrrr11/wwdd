@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Toaster } from 'react-hot-toast';
 import { Layout } from './components/Layout';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { LandingPage } from './pages/LandingPage';
 import { Dashboard } from './pages/Dashboard';
 import { MiningPage } from './pages/MiningPage';
 import { PackagesPage } from './pages/PackagesPage';
@@ -53,7 +54,19 @@ function App() {
         />
         
         <Routes>
-          <Route path="/auth" element={!user ? <AuthPage /> : <Navigate to="/dashboard" />} />
+          {/* Ana sayfa - Landing Page */}
+          <Route 
+            path="/" 
+            element={user ? <Navigate to="/dashboard" /> : <LandingPage />} 
+          />
+          
+          {/* Auth sayfası */}
+          <Route 
+            path="/auth" 
+            element={!user ? <AuthPage /> : <Navigate to="/dashboard" />} 
+          />
+          
+          {/* Korumalı sayfalar */}
           <Route
             path="/*"
             element={
@@ -66,7 +79,8 @@ function App() {
                     <Route path="/profile" element={<ProfilePage />} />
                     <Route path="/admin" element={<AdminPage />} />
                     <Route path="/withdrawal" element={<WithdrawalPage />} />
-                    <Route path="/" element={<Navigate to="/dashboard" />} />
+                    {/* Dashboard'a yönlendirme */}
+                    <Route path="*" element={<Navigate to="/dashboard" />} />
                   </Routes>
                 </Layout>
               </ProtectedRoute>
