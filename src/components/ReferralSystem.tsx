@@ -128,3 +128,5 @@ export const ReferralSystem: React.FC = () => {
     </div>
   );
 };
+  )
+}
