@@ -71,7 +71,7 @@ export const ProfilePage: React.FC = () => {
             </div>
             <div>
               <p className="text-sm text-gray-400">Deneme Kazancı</p>
-              <p className="text-2xl font-bold text-white">${user.totalTrialEarnings.toFixed(2)}</p>
+              <p className="text-2xl font-bold text-white">${(user.totalTrialEarnings ?? 0).toFixed(2)}</p>
             </div>
           </div>
 
