@@ -8,7 +8,7 @@ export const ProfilePage: React.FC = () => {
 
   if (!user) return null;
 
-  const isTrialActive = user.trialEndDate && new Date() < new Date(user.trialEndDate) && user.totalTrialEarnings < 25;
+  const isTrialActive = user.trialEndDate && new Date() < new Date(user.trialEndDate) && (user.totalTrialEarnings ?? 0) < 25;
 
   return (
     <div className="space-y-8">
@@ -56,6 +56,7 @@ export const ProfilePage: React.FC = () => {
             <div>
               <p className="text-sm text-gray-400">Toplam Bakiye</p>
               <p className="text-2xl font-bold text-white">${user.balance.toFixed(2)}</p>
+              <p className="text-2xl font-bold text-white">${(user.balance ?? 0).toFixed(2)}</p>
             </div>
           </div>
 
@@ -66,6 +67,7 @@ export const ProfilePage: React.FC = () => {
             <div>
               <p className="text-sm text-gray-400">Deneme Kazancı</p>
               <p className="text-2xl font-bold text-white">${user.totalTrialEarnings.toFixed(2)}</p>
+              <p className="text-2xl font-bold text-white">${(user.totalTrialEarnings ?? 0).toFixed(2)}</p>
             </div>
           </div>
 
@@ -114,12 +116,12 @@ export const ProfilePage: React.FC = () => {
           <div className="mt-6">
             <div className="flex justify-between text-sm text-gray-400 mb-2">
               <span>Deneme Kazanç İlerlemesi</span>
-              <span>${user.totalTrialEarnings.toFixed(2)} / $25.00</span>
+              <span>${(user.totalTrialEarnings ?? 0).toFixed(2)} / $25.00</span>
             </div>
             <div className="w-full bg-gray-700 rounded-full h-2">
               <div
                 className="h-2 rounded-full bg-gradient-to-r from-blue-500 to-green-500 transition-all"
-                style={{ width: `${Math.min((user.totalTrialEarnings / 25) * 100, 100)}%` }}
+                style={{ width: `${Math.min(((user.totalTrialEarnings ?? 0) / 25) * 100, 100)}%` }}
               />
             </div>
           </div>

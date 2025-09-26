@@ -31,7 +31,7 @@ export const UpgradePrompt: React.FC = () => {
 
   if (!showPrompt || user?.activePackage) return null;
 
-  const trialProgress = ((user?.totalTrialEarnings || 0) / 25) * 100;
+  const trialProgress = ((user?.totalTrialEarnings ?? 0) / 25) * 100;
   const isNearLimit = trialProgress > 70;
 
   return (
@@ -54,7 +54,7 @@ export const UpgradePrompt: React.FC = () => {
             </h3>
             <p className="text-blue-100 text-xs">
               {isNearLimit 
-                ? `Sadece $${(25 - (user?.totalTrialEarnings || 0)).toFixed(2)} kaldı`
+                ? `Sadece $${(25 - (user?.totalTrialEarnings ?? 0)).toFixed(2)} kaldı`
                 : 'Sınırsız kazanç için yükselt'
               }
             </p>

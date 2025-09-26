@@ -58,7 +58,7 @@ export const ReferralSystem: React.FC = () => {
             <p className="text-xs text-gray-400">Referans Kazancı</p>
           </div>
           <p className="text-lg font-bold text-green-400">
-            ${(user.referralEarnings || 0).toFixed(2)}
+            ${(user.referralEarnings ?? 0).toFixed(2)}
           </p>
         </div>
         

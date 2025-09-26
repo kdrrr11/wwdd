@@ -14,7 +14,7 @@ export const TrialStatus: React.FC = () => {
   const daysLeft = Math.max(0, Math.ceil((trialEndDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
   const earningsLeft = Math.max(0, 25 - user.totalTrialEarnings);
   const isTrialActive = daysLeft > 0 && earningsLeft > 0;
-  const progressPercentage = Math.min((user.totalTrialEarnings / 25) * 100, 100);
+  const progressPercentage = Math.min(((user.totalTrialEarnings ?? 0) / 25) * 100, 100);
 
   return (
     <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-xl p-4 md:p-6 border border-blue-500/30 mb-4 md:mb-6">
@@ -48,7 +48,7 @@ export const TrialStatus: React.FC = () => {
           <div className="min-w-0 flex-1">
             <p className="text-xs md:text-sm text-gray-400">Kazanç Limiti</p>
             <p className="text-base md:text-lg font-semibold text-white">
-              ${earningsLeft.toFixed(2)} / $25.00
+              ${Math.max(0, 25 - (user.totalTrialEarnings ?? 0)).toFixed(2)} / $25.00
             </p>
           </div>
         </div>
