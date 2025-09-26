@@ -122,7 +122,8 @@ export const AdminPage: React.FC = () => {
             ...userData,
             activePackage: notification.packageId,
             packageActivatedAt: new Date().toISOString(),
-            packageExpiresAt: expiryDate.toISOString()
+            packageExpiresAt: expiryDate.toISOString(),
+            balance: (userData.balance || 0) // Ensure balance exists
           });
 
           // Referans bonusu kontrolü ve ödeme

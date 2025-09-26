@@ -71,7 +71,7 @@ export const useAuth = () => {
                   const referrerData = referrer as any;
                   await set(referrerRef, {
                     ...referrerData,
-                    totalReferrals: (referrerData.totalReferrals || 0) + 1
+                    totalReferrals: (userData.totalReferrals || 0) + 1
                   });
                 }
               }
@@ -168,8 +168,7 @@ export const useAuth = () => {
         const userSnapshot = await get(userRef);
         if (userSnapshot.exists()) {
           const userData = userSnapshot.val();
-          await set(userRef, {
-            ...userData,
+          await update(userRef, {
             lastLoginIP: userIP,
             deviceFingerprint
           });

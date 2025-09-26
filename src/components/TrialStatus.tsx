@@ -11,10 +11,9 @@ export const TrialStatus: React.FC = () => {
 
   const trialEndDate = new Date(user.trialEndDate || '');
   const now = new Date();
-  const daysLeft = Math.max(0, Math.ceil((trialEndDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
-  const earningsLeft = Math.max(0, 25 - user.totalTrialEarnings);
+  const daysLeft = user.trialEndDate ? Math.max(0, Math.ceil((trialEndDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))) : 0;
+  const earningsLeft = Math.max(0, 25 - (user.totalTrialEarnings || 0));
   const isTrialActive = daysLeft > 0 && earningsLeft > 0;
-  const progressPercentage = Math.min(((user.totalTrialEarnings ?? 0) / 25) * 100, 100);
 
   return (
     <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-xl p-4 md:p-6 border border-blue-500/30 mb-4 md:mb-6">

@@ -197,7 +197,7 @@ export const useMining = () => {
         if (now > packageExpiry.getTime()) {
           console.log('Package expired, stopping mining');
           await stopMining(activeSession.id, 'Package expired');
-          toast.error('Paket süresi doldu, madencilik durduruldu');
+          // toast.error('Paket süresi doldu, madencilik durduruldu'); // Remove to prevent spam
           return;
         }
       }
@@ -280,7 +280,7 @@ export const useMining = () => {
       const earningsDifference = totalEarnings - activeSession.totalEarned;
       if (earningsDifference > 0) {
         // Güvenlik kontrolü: Çok büyük kazanç artışı kontrolü
-        const maxIncrease = coin.baseEarning * 0.1; // 6 dakikada maksimum artış
+        const maxIncrease = coin.baseEarning * 0.5; // 30 saniyede maksimum artış
         if (earningsDifference > maxIncrease) {
           console.warn('Earnings increase too large');
           return;

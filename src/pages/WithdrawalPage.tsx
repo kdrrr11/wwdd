@@ -51,6 +51,11 @@ export const WithdrawalPage: React.FC = () => {
       toast.error('Yetersiz bakiye');
       return;
     }
+    
+    if (maxWithdrawal < minWithdrawal) {
+      toast.error(`Minimum para çekme için en az $${minWithdrawal} bakiyeniz olmalı`);
+      return;
+    }
 
     if (!walletAddress.trim()) {
       toast.error('Lütfen geçerli bir cüzdan adresi girin');

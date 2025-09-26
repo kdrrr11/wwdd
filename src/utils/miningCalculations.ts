@@ -103,8 +103,8 @@ export const canUserMine = (user: User | null | undefined): boolean => {
   
   // Check if user has active package and it hasn't expired
   if (user.activePackage) {
-    if (user.packageExpiresAt) {
-      const packageExpiry = new Date(user.packageExpiresAt);
+    if ((user as any).packageExpiresAt) {
+      const packageExpiry = new Date((user as any).packageExpiresAt);
       const now = new Date();
       if (now > packageExpiry) {
         return false; // Package expired
