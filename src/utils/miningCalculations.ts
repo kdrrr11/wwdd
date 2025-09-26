@@ -5,6 +5,14 @@ export interface MiningCalculation {
   dailyEarningBonus: number;
 }
 
+export interface User {
+  id: string;
+  isBanned?: boolean;
+  activePackage?: string;
+  trialEndDate?: string | Date;
+  totalTrialEarnings?: number;
+}
+
 export const getPackageMultipliers = (packageId?: string): MiningCalculation => {
   const multipliers: Record<string, MiningCalculation> = {
     starter: {
@@ -45,9 +53,7 @@ export const calculateMiningEarnings = (
   }
   
   // Maksimum süre kontrolü (24 saat)
-  if (elapsedHours > 24) {
-    elapsedHours = 24;
-  }
+  const clampedElapsedHours = Math.min(elapsedHours, 24);
   
   const multipliers = getPackageMultipliers(packageId);
   const hashRateRatio = hashRate / baseHashRate;
@@ -59,10 +65,10 @@ export const calculateMiningEarnings = (
   const hourlyEarning = baseEarning * hashRateRatio * effectiveMultiplier;
   
   // Sonuç kontrolü
-  const result = hourlyEarning * elapsedHours;
+  const result = hourlyEarning * clampedElapsedHours;
   
   // Makul olmayan kazanç kontrolü
-  const maxReasonableEarning = baseEarning * 10 * elapsedHours;
+  const maxReasonableEarning = baseEarning * 10 * clampedElapsedHours;
   if (result > maxReasonableEarning) {
     console.warn('Calculated earnings exceed reasonable limits');
     return maxReasonableEarning;
@@ -89,7 +95,7 @@ export const calculateHashRate = (baseHashRate: number, packageId?: string): num
   return Math.max(baseHashRate, result);
 };
 
-export const canUserMine = (user: any): boolean => {
+export const canUserMine = (user: User | null | undefined): boolean => {
   if (!user) return false;
   
   // Ban kontrolü
@@ -102,7 +108,7 @@ export const canUserMine = (user: any): boolean => {
   const trialEndDate = user.trialEndDate ? new Date(user.trialEndDate) : null;
   const now = new Date();
   const trialActive = trialEndDate && now < trialEndDate;
-  const earningsWithinLimit = user.totalTrialEarnings < 25;
+  const earningsWithinLimit = (user.totalTrialEarnings || 0) < 25;
   
   return trialActive && earningsWithinLimit;
 };
@@ -116,5 +122,25 @@ export const formatHashRate = (hashRate: number): string => {
     return `${(hashRate / 1000).toFixed(1)}KH/s`;
   }
   return `${hashRate}H/s`;
+};
 
-}
+// Yardımcı fonksiyonlar
+export const validateMiningParameters = (
+  baseEarning: number,
+  hashRate: number,
+  baseHashRate: number,
+  elapsedHours: number
+): boolean => {
+  return baseEarning >= 0 && 
+         hashRate >= 0 && 
+         baseHashRate > 0 && 
+         elapsedHours >= 0;
+};
+
+export const getMaxTrialEarnings = (): number => {
+  return 25;
+};
+
+export const getMaxDailyHours = (): number => {
+  return 24;
+};
