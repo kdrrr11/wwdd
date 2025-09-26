@@ -18,7 +18,6 @@ export const ProfilePage: React.FC = () => {
 
   if (!user) return null;
 
-  const isTrialActive = user.trialEndDate && isValidDate(user.trialEndDate) && new Date() < new Date(user.trialEndDate) && (user.totalTrialEarnings ?? 0) < 25;
   const isTrialActive = user.trialEndDate && isValidDate(user.trialEndDate) && new Date() < new Date(user.trialEndDate) && (user?.totalTrialEarnings ?? 0) < 25;
 
   return (
