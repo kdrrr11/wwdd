@@ -1,17 +1,16 @@
 {
   "rules": {
+    ".read": "auth != null",
+    ".write": "auth != null",
+    
     "users": {
-      "$uid": {
-        ".read": "$uid === auth.uid || root.child('users').child(auth.uid).child('isAdmin').val() === true",
-        ".write": "$uid === auth.uid || root.child('users').child(auth.uid).child('isAdmin').val() === true"
-      }
+      ".read": "auth != null",
+      ".write": "auth != null"
     },
     
     "miningSessions": {
-      "$uid": {
-        ".read": "$uid === auth.uid || root.child('users').child(auth.uid).child('isAdmin').val() === true",
-        ".write": "$uid === auth.uid || root.child('users').child(auth.uid).child('isAdmin').val() === true"
-      }
+      ".read": "auth != null", 
+      ".write": "auth != null"
     },
     
     "paymentNotifications": {
@@ -20,7 +19,7 @@
     },
     
     "withdrawalRequests": {
-      ".read": "auth != null", 
+      ".read": "auth != null",
       ".write": "auth != null"
     },
     
