@@ -31,12 +31,14 @@ export const useAuth = () => {
                 console.warn('User data not found in database');
                 setUser(null);
               }
+              setLoading(false);
             }, (error) => {
               console.error('Error listening to user data:', error);
+              setLoading(false);
             });
           } else {
             // Create new user profile
-            const deviceFingerprint = generateDeviceFingerprint();
+            const deviceFingerprint = await generateDeviceFingerprint();
             const referralCode = generateReferralCode(firebaseUser.uid);
             
             // URL'den referans kodunu kontrol et
@@ -77,6 +79,7 @@ export const useAuth = () => {
             
             await set(userRef, newUser);
             setUser(newUser);
+            setLoading(false);
             
             // Güvenlik logu
             await logSecurityEvent(firebaseUser.uid, 'ACCOUNT_CREATED', deviceFingerprint);
@@ -94,7 +97,11 @@ export const useAuth = () => {
         } else {
           // Çıkış logu
           if (user) {
-            await logSecurityEvent(user.uid, 'LOGOUT', user.deviceFingerprint || '');
+            try {
+              await logSecurityEvent(user.uid, 'LOGOUT', user.deviceFingerprint || '');
+            } catch (error) {
+              console.error('Error logging logout:', error);
+            }
           }
           
           // Clean up user data listener when user logs out
@@ -103,11 +110,11 @@ export const useAuth = () => {
             userDataUnsubscribe = null;
           }
           setUser(null);
+          setLoading(false);
         }
       } catch (error) {
         console.error('Error in auth state change:', error);
         setUser(null);
-      } finally {
         setLoading(false);
       }
     });
@@ -119,7 +126,7 @@ export const useAuth = () => {
         userDataUnsubscribe();
       }
     };
-  }, []);
+  }, [user?.uid]);
 
   const login = async (email: string, password: string) => {
     try {
@@ -128,22 +135,34 @@ export const useAuth = () => {
       
       // Giriş güvenlik kontrolü
       if (result.user) {
-        const deviceFingerprint = generateDeviceFingerprint();
+        const deviceFingerprint = await generateDeviceFingerprint();
         const userIP = await getUserIP();
         
         // Kullanıcı bilgilerini güncelle
         const userRef = ref(database, `users/${result.user.uid}`);
-        await set(userRef, {
-          ...user,
-          lastLoginIP: userIP,
-          deviceFingerprint
-        });
+        const userSnapshot = await get(userRef);
+        if (userSnapshot.exists()) {
+          const userData = userSnapshot.val();
+          await set(userRef, {
+            ...userData,
+            lastLoginIP: userIP,
+            deviceFingerprint
+          });
+        }
         
         // Güvenlik logu
-        await logSecurityEvent(result.user.uid, 'LOGIN', deviceFingerprint);
+        try {
+          await logSecurityEvent(result.user.uid, 'LOGIN', deviceFingerprint);
+        } catch (error) {
+          console.error('Error logging login:', error);
+        }
         
         // Şüpheli aktivite kontrolü
-        await checkSuspiciousActivity(result.user.uid, userIP, deviceFingerprint);
+        try {
+          await checkSuspiciousActivity(result.user.uid, userIP, deviceFingerprint);
+        } catch (error) {
+          console.error('Error checking suspicious activity:', error);
+        }
       }
       
       return result;
@@ -283,7 +302,7 @@ export const useAuth = () => {
         suspicious: false
       };
       
-      const logsRef = ref(database, 'securityLogs');
+      const logsRef = ref(database, `securityLogs/${Date.now()}_${userId}`);
       await set(logsRef, securityLog);
     } catch (error) {
       console.error('Security logging failed:', error);

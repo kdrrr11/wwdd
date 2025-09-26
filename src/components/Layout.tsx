@@ -27,9 +27,10 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const handleLogout = async () => {
     try {
+      setIsMobileMenuOpen(false);
       await logout();
       toast.success('Başarıyla çıkış yapıldı');
-      navigate('/');
+      // Navigation will be handled by auth state change
     } catch (error) {
       toast.error('Çıkış yapılırken hata oluştu');
     }

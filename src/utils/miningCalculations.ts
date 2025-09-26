@@ -145,14 +145,20 @@ export const getMaxDailyHours = (): number => {
   return 24;
 };
 
-export const generateDeviceFingerprint = (): string => {
+export const generateDeviceFingerprint = async (): Promise<string> => {
   // Cihaz parmak izi oluşturma
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-  if (ctx) {
-    ctx.textBaseline = 'top';
-    ctx.font = '14px Arial';
-    ctx.fillText('Device fingerprint', 2, 2);
+  let canvasFingerprint = '';
+  try {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      ctx.textBaseline = 'top';
+      ctx.font = '14px Arial';
+      ctx.fillText('Device fingerprint', 2, 2);
+      canvasFingerprint = canvas.toDataURL();
+    }
+  } catch (error) {
+    console.warn('Canvas fingerprinting failed:', error);
   }
   
   const fingerprint = [
@@ -160,7 +166,7 @@ export const generateDeviceFingerprint = (): string => {
     navigator.language,
     screen.width + 'x' + screen.height,
     new Date().getTimezoneOffset(),
-    canvas.toDataURL(),
+    canvasFingerprint,
     navigator.hardwareConcurrency || 0,
     navigator.deviceMemory || 0
   ].join('|');

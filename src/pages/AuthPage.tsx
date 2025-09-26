@@ -23,10 +23,28 @@ export const AuthPage: React.FC = () => {
       setReferralCode(refParam);
     }
   }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Prevent double submission
+    if (loading) return;
+    
     if (!email || !password) {
       toast.error('Lütfen tüm alanları doldurun');
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error('Geçerli bir e-posta adresi girin');
+      return;
+    }
+
+    // Password validation
+    if (password.length < 6) {
+      toast.error('Şifre en az 6 karakter olmalıdır');
       return;
     }
 
@@ -39,11 +57,21 @@ export const AuthPage: React.FC = () => {
         await register(email, password);
         toast.success('Hesap başarıyla oluşturuldu!');
       }
-      navigate('/dashboard');
+      
+      // Navigation will be handled by the auth state change
+      // navigate('/dashboard');
     } catch (error: any) {
       toast.error(error.message || 'Kimlik doğrulama başarısız');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
+  };
+
+  const toggleAuthMode = () => {
+    setIsLogin(!isLogin);
+    setEmail('');
+    setPassword('');
+    setReferralCode('');
   };
 
   return (
@@ -86,6 +114,7 @@ export const AuthPage: React.FC = () => {
                 className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 placeholder="E-posta adresinizi girin"
                 required
+                disabled={loading}
               />
             </div>
 
@@ -102,11 +131,13 @@ export const AuthPage: React.FC = () => {
                   className="w-full px-4 py-3 pr-12 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   placeholder="Şifrenizi girin"
                   required
+                  disabled={loading}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                  disabled={loading}
                 >
                   {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
@@ -125,6 +156,7 @@ export const AuthPage: React.FC = () => {
                   onChange={(e) => setReferralCode(e.target.value)}
                   className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   placeholder="Referans kodunu girin"
+                  disabled={loading}
                 />
               </div>
             )}
@@ -149,8 +181,9 @@ export const AuthPage: React.FC = () => {
             <p className="text-gray-400">
               {isLogin ? "Hesabınız yok mu?" : 'Zaten hesabınız var mı?'}
               <button
-                onClick={() => setIsLogin(!isLogin)}
+                onClick={toggleAuthMode}
                 className="ml-2 text-blue-400 hover:text-blue-300 font-medium transition-colors"
+                disabled={loading}
               >
                 {isLogin ? 'Kayıt Ol' : 'Giriş Yap'}
               </button>
