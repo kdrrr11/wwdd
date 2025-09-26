@@ -71,7 +71,7 @@ export const useAuth = () => {
                   const referrerData = referrer as any;
                   await set(referrerRef, {
                     ...referrerData,
-                    totalReferrals: (userData.totalReferrals || 0) + 1
+                    totalReferrals: (referrerData.totalReferrals || 0) + 1
                   });
                 }
               }
@@ -104,7 +104,6 @@ export const useAuth = () => {
             
             await set(userRef, newUser);
             setUser(newUser);
-            setLoading(false);
             
             // Güvenlik logu
             await logSecurityEvent(firebaseUser.uid, 'ACCOUNT_CREATED', deviceFingerprint);
@@ -115,8 +114,10 @@ export const useAuth = () => {
                 const userData = userSnapshot.val();
                 setUser(userData);
               }
+              setLoading(false);
             }, (error) => {
               console.error('Error listening to user data:', error);
+              setLoading(false);
             });
           }
         } else {

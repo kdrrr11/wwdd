@@ -75,14 +75,16 @@ export const AuthPage: React.FC = () => {
         }
         
         toast.success(t('success') + ': Hesap başarıyla oluşturuldu!');
+        
+        // Kayıt sonrası dashboard'a yönlendir
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 1000);
       } else if (mode === 'reset') {
         await resetPassword(email);
         toast.success(t('success') + ': Şifre sıfırlama e-postası gönderildi!');
         setMode('login');
       }
-      
-      // Navigation will be handled by the auth state change
-      // navigate('/dashboard');
     } catch (error: any) {
       toast.error(t('error') + ': ' + (error.message || 'İşlem başarısız'));
     } finally {
