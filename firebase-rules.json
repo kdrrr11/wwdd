@@ -1,0 +1,151 @@
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        ".read": "$uid === auth.uid || root.child('users').child(auth.uid).child('isAdmin').val() === true",
+        ".write": "$uid === auth.uid || root.child('users').child(auth.uid).child('isAdmin').val() === true",
+        ".validate": "newData.hasChildren(['uid', 'email', 'createdAt'])",
+        "uid": {
+          ".validate": "newData.val() === $uid"
+        },
+        "email": {
+          ".validate": "newData.isString() && newData.val().matches(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$/)"
+        },
+        "balance": {
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        },
+        "totalTrialEarnings": {
+          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 25"
+        },
+        "isAdmin": {
+          ".write": "root.child('users').child(auth.uid).child('isAdmin').val() === true"
+        },
+        "isBanned": {
+          ".write": "root.child('users').child(auth.uid).child('isAdmin').val() === true"
+        }
+      }
+    },
+    
+    "miningSessions": {
+      "$uid": {
+        ".read": "$uid === auth.uid || root.child('users').child(auth.uid).child('isAdmin').val() === true",
+        ".write": "$uid === auth.uid || root.child('users').child(auth.uid).child('isAdmin').val() === true",
+        "$sessionId": {
+          ".validate": "newData.hasChildren(['userId', 'coin', 'startTime', 'hashRate', 'totalEarned', 'isActive'])",
+          "userId": {
+            ".validate": "newData.val() === $uid"
+          },
+          "coin": {
+            ".validate": "newData.isString() && (newData.val() === 'btc' || newData.val() === 'eth' || newData.val() === 'doge' || newData.val() === 'ltc' || newData.val() === 'ada' || newData.val() === 'dot' || newData.val() === 'sol' || newData.val() === 'matic')"
+          },
+          "hashRate": {
+            ".validate": "newData.isNumber() && newData.val() >= 1000 && newData.val() <= 10000"
+          },
+          "totalEarned": {
+            ".validate": "newData.isNumber() && newData.val() >= 0"
+          },
+          "isActive": {
+            ".validate": "newData.isBoolean()"
+          },
+          "startTime": {
+            ".validate": "newData.isString()"
+          },
+          "endTime": {
+            ".validate": "newData.isString()"
+          }
+        }
+      }
+    },
+    
+    "paymentNotifications": {
+      ".read": "root.child('users').child(auth.uid).child('isAdmin').val() === true || auth != null",
+      ".write": "auth != null",
+      "$notificationId": {
+        ".validate": "newData.hasChildren(['userId', 'packageId', 'amount', 'status', 'createdAt'])",
+        "userId": {
+          ".validate": "newData.val() === auth.uid || root.child('users').child(auth.uid).child('isAdmin').val() === true"
+        },
+        "packageId": {
+          ".validate": "newData.isString() && (newData.val() === 'starter' || newData.val() === 'professional' || newData.val() === 'enterprise')"
+        },
+        "amount": {
+          ".validate": "newData.isNumber() && newData.val() > 0"
+        },
+        "status": {
+          ".validate": "newData.isString() && (newData.val() === 'pending' || newData.val() === 'approved' || newData.val() === 'rejected')",
+          ".write": "newData.val() === 'pending' || root.child('users').child(auth.uid).child('isAdmin').val() === true"
+        }
+      }
+    },
+    
+    "withdrawalRequests": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      "$requestId": {
+        ".validate": "newData.hasChildren(['userId', 'amount', 'walletAddress', 'status', 'requestedAt'])",
+        "userId": {
+          ".validate": "newData.val() === auth.uid || root.child('users').child(auth.uid).child('isAdmin').val() === true"
+        },
+        "amount": {
+          ".validate": "newData.isNumber() && newData.val() >= 10"
+        },
+        "walletAddress": {
+          ".validate": "newData.isString() && newData.val().length >= 20"
+        },
+        "status": {
+          ".validate": "newData.isString() && (newData.val() === 'pending' || newData.val() === 'approved' || newData.val() === 'rejected' || newData.val() === 'completed')",
+          ".write": "newData.val() === 'pending' || root.child('users').child(auth.uid).child('isAdmin').val() === true"
+        }
+      }
+    },
+    
+    "supportTickets": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      "$ticketId": {
+        ".validate": "newData.hasChildren(['userId', 'subject', 'message', 'status', 'priority', 'createdAt'])",
+        "userId": {
+          ".validate": "newData.val() === auth.uid || root.child('users').child(auth.uid).child('isAdmin').val() === true"
+        },
+        "subject": {
+          ".validate": "newData.isString() && newData.val().length >= 5 && newData.val().length <= 100"
+        },
+        "message": {
+          ".validate": "newData.isString() && newData.val().length >= 10 && newData.val().length <= 1000"
+        },
+        "status": {
+          ".validate": "newData.isString() && (newData.val() === 'open' || newData.val() === 'in-progress' || newData.val() === 'closed')",
+          ".write": "newData.val() === 'open' || root.child('users').child(auth.uid).child('isAdmin').val() === true"
+        },
+        "priority": {
+          ".validate": "newData.isString() && (newData.val() === 'low' || newData.val() === 'medium' || newData.val() === 'high')"
+        },
+        "adminResponse": {
+          ".write": "root.child('users').child(auth.uid).child('isAdmin').val() === true"
+        }
+      }
+    },
+    
+    "referralBonuses": {
+      ".read": "root.child('users').child(auth.uid).child('isAdmin').val() === true",
+      ".write": "root.child('users').child(auth.uid).child('isAdmin').val() === true",
+      "$bonusId": {
+        ".validate": "newData.hasChildren(['referrerId', 'referredUserId', 'packageId', 'packageAmount', 'bonusAmount', 'status', 'createdAt'])",
+        "bonusAmount": {
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        },
+        "status": {
+          ".validate": "newData.isString() && (newData.val() === 'pending' || newData.val() === 'paid')"
+        }
+      }
+    },
+    
+    "securityLogs": {
+      ".read": "root.child('users').child(auth.uid).child('isAdmin').val() === true",
+      ".write": "auth != null",
+      "$logId": {
+        ".validate": "newData.hasChildren(['userId', 'action', 'ipAddress', 'timestamp'])"
+      }
+    }
+  }
+}
