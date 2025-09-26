@@ -36,6 +36,9 @@ export interface MiningSession {
   isActive: boolean;
   packageId?: string | null; // Optional olarak tanımlandı
   lastUpdated?: string;
+  createdAt?: string; // Güvenlik için oluşturulma zamanı
+  lastServerUpdate?: number; // Server timestamp for validation
+  userAgent?: string; // Güvenlik için user agent
 }
 
 export interface PaymentNotification {
