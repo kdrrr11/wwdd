@@ -38,15 +38,55 @@ export const calculateMiningEarnings = (
   elapsedHours: number,
   packageId?: string
 ): number => {
+  // Güvenlik kontrolleri
+  if (baseEarning < 0 || hashRate < 0 || baseHashRate <= 0 || elapsedHours < 0) {
+    console.warn('Invalid parameters for mining calculation');
+    return 0;
+  }
+  
+  // Maksimum süre kontrolü (24 saat)
+  if (elapsedHours > 24) {
+    elapsedHours = 24;
+  }
+  
   const multipliers = getPackageMultipliers(packageId);
   const hashRateRatio = hashRate / baseHashRate;
-  const hourlyEarning = baseEarning * hashRateRatio * multipliers.earningMultiplier;
-  return hourlyEarning * elapsedHours;
+  
+  // Maksimum multiplier kontrolü
+  const maxMultiplier = packageId ? 10 : 1; // Premium paketler için max 10x, trial için 1x
+  const effectiveMultiplier = Math.min(multipliers.earningMultiplier, maxMultiplier);
+  
+  const hourlyEarning = baseEarning * hashRateRatio * effectiveMultiplier;
+  
+  // Sonuç kontrolü
+  const result = hourlyEarning * elapsedHours;
+  
+  // Makul olmayan kazanç kontrolü
+  const maxReasonableEarning = baseEarning * 10 * elapsedHours;
+  if (result > maxReasonableEarning) {
+    console.warn('Calculated earnings exceed reasonable limits');
+    return maxReasonableEarning;
+  }
+  
+  return Math.max(0, result);
 };
 
 export const calculateHashRate = (baseHashRate: number, packageId?: string): number => {
+  if (baseHashRate <= 0) {
+    console.warn('Invalid base hash rate');
+    return 1000; // Default hash rate
+  }
+  
   const multipliers = getPackageMultipliers(packageId);
-  return Math.floor(baseHashRate * multipliers.hashRateMultiplier);
+  
+  // Maksimum hash rate kontrolü
+  const maxMultiplier = packageId ? 10 : 1; // Premium paketler için max 10x, trial için 1x
+  const effectiveMultiplier = Math.min(multipliers.hashRateMultiplier, maxMultiplier);
+  
+  const result = Math.floor(baseHashRate * effectiveMultiplier);
+  
+  // Minimum ve maksimum değer kontrolü
+  return Math.max(baseHashRate, Math.min(result, baseHashRate * 10));
 };
 
 export const canUserMine = (user: any): boolean => {
@@ -65,10 +105,12 @@ export const canUserMine = (user: any): boolean => {
 };
 
 export const formatHashRate = (hashRate: number): string => {
+  if (hashRate <= 0) return '0H/s';
+  
   if (hashRate >= 1000000) {
     return `${(hashRate / 1000000).toFixed(1)}MH/s`;
   } else if (hashRate >= 1000) {
     return `${(hashRate / 1000).toFixed(1)}KH/s`;
   }
   return `${hashRate}H/s`;
-};
+}
