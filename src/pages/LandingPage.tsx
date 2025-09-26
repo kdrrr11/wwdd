@@ -356,7 +356,7 @@ export const LandingPage: React.FC = () => {
               <ul className="space-y-4 mb-8">
                 <li className="flex items-center space-x-3">
                   <span className="text-green-400 font-bold">✓</span>
-                  <span className="text-gray-300">30 gün madencilik</span>
+                  <span className="text-gray-300">90 gün madencilik</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <span className="text-green-400 font-bold">✓</span>
@@ -396,7 +396,7 @@ export const LandingPage: React.FC = () => {
               <ul className="space-y-4 mb-8">
                 <li className="flex items-center space-x-3">
                   <span className="text-green-400 font-bold">✓</span>
-                  <span className="text-gray-300">60 gün madencilik</span>
+                  <span className="text-gray-300">90 gün madencilik</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <span className="text-green-400 font-bold">✓</span>
