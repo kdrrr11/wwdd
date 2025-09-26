@@ -16,10 +16,7 @@ import { useAuth } from './hooks/useAuth';
 function App() {
   const { user, loading } = useAuth();
 
-  // Debug için console.log ekleyelim
-  console.log('Current user:', user);
-  console.log('Loading state:', loading);
-  console.log('Current URL:', window.location.pathname);
+  // Debug logs removed for production
 
   if (loading) {
     return (
