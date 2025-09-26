@@ -31,6 +31,16 @@ export const LandingPage: React.FC = () => {
     setOpenFaq(openFaq === index ? null : index);
   };
 
+  // Update meta tags based on language
+  useEffect(() => {
+    document.title = t('heroTitle') + ' | CryptoCloud Mining';
+    
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', t('heroSubtitle'));
+    }
+  }, [t]);
+
   const faqData = [
     {
       question: "Kripto para madenciliği nedir?",
@@ -68,9 +78,9 @@ export const LandingPage: React.FC = () => {
             </div>
             
             <div className="hidden md:flex space-x-8">
-              <a href="#özellikler" className="text-gray-300 hover:text-white transition-colors">Özellikler</a>
-              <a href="#madencilik" className="text-gray-300 hover:text-white transition-colors">Madencilik</a>
-              <a href="#paketler" className="text-gray-300 hover:text-white transition-colors">Paketler</a>
+              <a href="#özellikler" className="text-gray-300 hover:text-white transition-colors">{t('whyChooseUs')}</a>
+              <a href="#madencilik" className="text-gray-300 hover:text-white transition-colors">{t('mining')}</a>
+              <a href="#paketler" className="text-gray-300 hover:text-white transition-colors">{t('packages')}</a>
               <a href="#sss" className="text-gray-300 hover:text-white transition-colors">SSS</a>
             </div>
             
@@ -82,7 +92,7 @@ export const LandingPage: React.FC = () => {
               to="/auth" 
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-2 rounded-lg font-semibold transition-all transform hover:scale-105"
             >
-              Ücretsiz Başla
+              {t('freeBonus')}
             </Link>
           </nav>
         </div>
@@ -99,16 +109,11 @@ export const LandingPage: React.FC = () => {
           
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 text-white">
-              Kripto Para Madenciliği ile 
-              <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                {' '}Pasif Gelir{' '}
-              </span>
-              Elde Edin
+              {t('heroTitle')}
             </h1>
             
             <p className="text-xl md:text-2xl mb-8 text-gray-300 max-w-4xl mx-auto">
-              Bitcoin, Ethereum, Solana ve 5+ kripto para madenciliği ile günlük kazanç sağlayın. 
-              Profesyonel bulut madenciliği hizmeti ile güvenli yatırım yapın.
+              {t('heroSubtitle')}
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
@@ -117,14 +122,14 @@ export const LandingPage: React.FC = () => {
                 className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black px-8 py-4 rounded-xl text-xl font-bold transition-all transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2"
               >
                 <span>🎁</span>
-                <span>Ücretsiz $25 Bonus Al</span>
+                <span>{t('freeBonus')}</span>
               </Link>
               
               <a 
                 href="#özellikler" 
                 className="border-2 border-white text-white hover:bg-white hover:text-gray-900 px-8 py-4 rounded-xl text-xl font-semibold transition-all transform hover:scale-105"
               >
-                Nasıl Çalışır?
+                {t('howItWorks')}
               </a>
             </div>
             
@@ -155,10 +160,8 @@ export const LandingPage: React.FC = () => {
       <section id="özellikler" className="py-20 bg-black/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">Neden CryptoCloud Mining?</h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Kripto para madenciliğinde lider platformumuzun sunduğu avantajları keşfedin
-            </p>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">{t('whyChooseUs')}</h2>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">{t('heroSubtitle')}</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -166,33 +169,24 @@ export const LandingPage: React.FC = () => {
               <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <Shield className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-white mb-4">100% Güvenli</h3>
-              <p className="text-gray-300 leading-relaxed">
-                SSL şifreleme ve çok katmanlı güvenlik sistemleri ile verileriniz tamamen korunur. 
-                Lisanslı ve denetlenmiş platform güvencesi.
-              </p>
+              <h3 className="text-2xl font-bold text-white mb-4">{t('secureTitle')}</h3>
+              <p className="text-gray-300 leading-relaxed">{t('secureDesc')}</p>
             </div>
             
             <div className="bg-white/5 backdrop-blur-md rounded-2xl p-8 border border-white/10 hover:border-blue-500/50 transition-all hover:transform hover:scale-105 group">
               <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <Zap className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-white mb-4">Yüksek Performans</h3>
-              <p className="text-gray-300 leading-relaxed">
-                Son teknoloji madencilik donanımları ile maksimum hash rate ve verimlilik. 
-                7/24 kesintisiz madencilik garantisi.
-              </p>
+              <h3 className="text-2xl font-bold text-white mb-4">{t('highPerformanceTitle')}</h3>
+              <p className="text-gray-300 leading-relaxed">{t('highPerformanceDesc')}</p>
             </div>
             
             <div className="bg-white/5 backdrop-blur-md rounded-2xl p-8 border border-white/10 hover:border-blue-500/50 transition-all hover:transform hover:scale-105 group">
               <div className="w-16 h-16 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <DollarSign className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-white mb-4">Günlük Ödemeler</h3>
-              <p className="text-gray-300 leading-relaxed">
-                Kazançlarınız günlük olarak hesaplanır ve bakiyenize eklenir. 
-                Minimum $10 ile para çekme imkanı.
-              </p>
+              <h3 className="text-2xl font-bold text-white mb-4">{t('dailyPaymentsTitle')}</h3>
+              <p className="text-gray-300 leading-relaxed">{t('dailyPaymentsDesc')}</p>
             </div>
             
             <div className="bg-white/5 backdrop-blur-md rounded-2xl p-8 border border-white/10 hover:border-blue-500/50 transition-all hover:transform hover:scale-105 group">

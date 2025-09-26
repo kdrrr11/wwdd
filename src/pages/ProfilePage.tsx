@@ -1,7 +1,10 @@
 import React from 'react';
 import { useAuth } from '../hooks/useAuth';
-import { User, Calendar, DollarSign, Package, Clock } from 'lucide-react';
+import { useLanguage } from '../hooks/useLanguage';
+import { LanguageSelector } from '../components/LanguageSelector';
+import { User, Calendar, DollarSign, Package, Clock, Globe, Settings } from 'lucide-react';
 import { format } from 'date-fns';
+import toast from 'react-hot-toast';
 
 const isValidDate = (dateString: string | null | undefined): boolean => {
   if (!dateString) return false;
@@ -11,6 +14,7 @@ const isValidDate = (dateString: string | null | undefined): boolean => {
 
 export const ProfilePage: React.FC = () => {
   const { user } = useAuth();
+  const { t } = useLanguage();
 
   if (!user) return null;
 
@@ -19,20 +23,20 @@ export const ProfilePage: React.FC = () => {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-white mb-2">Profil</h1>
-        <p className="text-gray-400">Hesabınızı yönetin ve madencilik istatistiklerinizi görün</p>
+        <h1 className="text-3xl font-bold text-white mb-2">{t('profile')}</h1>
+        <p className="text-gray-400">{t('accountInfo')}</p>
       </div>
 
       {/* User Information */}
       <div className="bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-gray-700">
-        <h3 className="text-xl font-semibold text-white mb-6">Hesap Bilgileri</h3>
+        <h3 className="text-xl font-semibold text-white mb-6">{t('accountInfo')}</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="flex items-center space-x-4">
             <div className="p-3 rounded-lg bg-blue-600/20">
               <User className="h-6 w-6 text-blue-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-400">E-posta</p>
+              <p className="text-sm text-gray-400">{t('email')}</p>
               <p className="text-white font-medium">{user.email}</p>
             </div>
           </div>
@@ -51,16 +55,33 @@ export const ProfilePage: React.FC = () => {
         </div>
       </div>
 
+      {/* Settings */}
+      <div className="bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-gray-700">
+        <h3 className="text-xl font-semibold text-white mb-6 flex items-center space-x-2">
+          <Settings className="h-6 w-6" />
+          <span>{t('settings')}</span>
+        </h3>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <Globe className="h-5 w-5 text-blue-400" />
+              <span className="text-white font-medium">Dil / Language</span>
+            </div>
+            <LanguageSelector />
+          </div>
+        </div>
+      </div>
+
       {/* Balance and Earnings */}
       <div className="bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-gray-700">
-        <h3 className="text-xl font-semibold text-white mb-6">Bakiye ve Kazançlar</h3>
+        <h3 className="text-xl font-semibold text-white mb-6">{t('balanceEarnings')}</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="flex items-center space-x-4">
             <div className="p-3 rounded-lg bg-green-600/20">
               <DollarSign className="h-6 w-6 text-green-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-400">Toplam Bakiye</p>
+              <p className="text-sm text-gray-400">{t('totalBalance')}</p>
               <p className="text-2xl font-bold text-white">${user.balance.toFixed(2)}</p>
             </div>
           </div>
@@ -70,7 +91,7 @@ export const ProfilePage: React.FC = () => {
               <DollarSign className="h-6 w-6 text-blue-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-400">Deneme Kazancı</p>
+              <p className="text-sm text-gray-400">{t('trialEarnings')}</p>
               <p className="text-2xl font-bold text-white">${(user.totalTrialEarnings ?? 0).toFixed(2)}</p>
             </div>
           </div>
@@ -80,8 +101,8 @@ export const ProfilePage: React.FC = () => {
               <Package className="h-6 w-6 text-purple-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-400">Aktif Paket</p>
-              <p className="text-xl font-bold text-white">{user.activePackage || 'Ücretsiz Deneme'}</p>
+              <p className="text-sm text-gray-400">{t('activePackage')}</p>
+              <p className="text-xl font-bold text-white">{user.activePackage || t('freeTrial')}</p>
             </div>
           </div>
         </div>
@@ -90,7 +111,7 @@ export const ProfilePage: React.FC = () => {
       {/* Trial Status */}
       {!user.activePackage && (
         <div className="bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-gray-700">
-          <h3 className="text-xl font-semibold text-white mb-6">Deneme Durumu</h3>
+          <h3 className="text-xl font-semibold text-white mb-6">{t('trialStatus')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex items-center space-x-4">
               <div className="p-3 rounded-lg bg-blue-600/20">

@@ -1,6 +1,7 @@
 // src/pages/Dashboard.tsx
 import React from 'react';
 import { useAuth } from '../hooks/useAuth';
+import { useLanguage } from '../hooks/useLanguage';
 import { TrialStatus } from '../components/TrialStatus';
 import { ReferralSystem } from '../components/ReferralSystem';
 import { UpgradePrompt } from '../components/UpgradePrompt';
@@ -9,6 +10,7 @@ import { Link } from 'react-router-dom';
 
 export const Dashboard: React.FC = () => {
   const { user } = useAuth();
+  const { t } = useLanguage();
 
   const stats = [
     {
@@ -18,10 +20,11 @@ export const Dashboard: React.FC = () => {
       color: 'text-green-400',
       bgColor: 'bg-green-600/20',
       change: '+0.00%',
-      changeColor: 'text-green-400'
+      changeColor: 'text-green-400',
+      label: t('totalBalance')
     },
     {
-      label: 'Deneme Kazancı',
+      label: t('trialEarnings'),
       value: `$${(user?.totalTrialEarnings ?? 0).toFixed(2)}`,
       icon: TrendingUp,
       color: 'text-blue-400',
@@ -30,8 +33,8 @@ export const Dashboard: React.FC = () => {
       changeColor: 'text-blue-400'
     },
     {
-      label: 'Aktif Paket',
-      value: user?.activePackage || 'Ücretsiz Deneme',
+      label: t('activePackage'),
+      value: user?.activePackage || t('freeTrial'),
       icon: Package,
       color: 'text-purple-400',
       bgColor: 'bg-purple-600/20',
@@ -42,32 +45,32 @@ export const Dashboard: React.FC = () => {
 
   const quickActions = [
     {
-      title: 'Madenciliğe Başla',
-      description: 'Kripto kazanmaya başla',
+      title: t('startMining'),
+      description: t('startMining'),
       icon: Pickaxe,
       color: 'bg-blue-600/20 border-blue-500/30 hover:bg-blue-600/30',
       iconColor: 'text-blue-400',
       link: '/mining'
     },
     {
-      title: 'Paketleri Gör',
-      description: 'Planınızı yükseltin',
+      title: t('packages'),
+      description: t('packages'),
       icon: Package,
       color: 'bg-purple-600/20 border-purple-500/30 hover:bg-purple-600/30',
       iconColor: 'text-purple-400',
       link: '/packages'
     },
     {
-      title: 'Kazançları Kontrol Et',
-      description: 'İlerlemenizi görün',
+      title: t('earnings'),
+      description: t('earnings'),
       icon: TrendingUp,
       color: 'bg-green-600/20 border-green-500/30 hover:bg-green-600/30',
       iconColor: 'text-green-400',
       link: '/profile'
     },
     {
-      title: 'Para Çekme Talebi',
-      description: 'Kazancınızı çekin',
+      title: t('withdrawal'),
+      description: t('withdrawal'),
       icon: DollarSign,
       color: 'bg-yellow-600/20 border-yellow-500/30 hover:bg-yellow-600/30',
       iconColor: 'text-yellow-400',
@@ -79,8 +82,8 @@ export const Dashboard: React.FC = () => {
     <div className="space-y-6 md:space-y-8 pb-20 lg:pb-8">
       {/* Header */}
       <div className="text-center lg:text-left">
-        <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">Kontrol Paneli</h1>
-        <p className="text-gray-400 text-sm md:text-base">Tekrar hoşgeldiniz, {user?.email}</p>
+        <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">{t('dashboard')}</h1>
+        <p className="text-gray-400 text-sm md:text-base">{t('welcomeBack')}, {user?.email}</p>
       </div>
 
       {/* Trial Status */}
@@ -114,7 +117,7 @@ export const Dashboard: React.FC = () => {
 
       {/* Quick Actions */}
       <div className="bg-gray-800/50 backdrop-blur-md rounded-xl p-4 md:p-6 border border-gray-700">
-        <h3 className="text-lg md:text-xl font-semibold text-white mb-4 md:mb-6">Hızlı İşlemler</h3>
+        <h3 className="text-lg md:text-xl font-semibold text-white mb-4 md:mb-6">{t('quickActions')}</h3>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
           {quickActions.map((action, index) => {
             const Icon = action.icon;
@@ -138,7 +141,7 @@ export const Dashboard: React.FC = () => {
       {/* Recent Activity */}
       <div className="bg-gray-800/50 backdrop-blur-md rounded-xl p-4 md:p-6 border border-gray-700">
         <div className="flex items-center justify-between mb-4 md:mb-6">
-          <h3 className="text-lg md:text-xl font-semibold text-white">Son Aktiviteler</h3>
+          <h3 className="text-lg md:text-xl font-semibold text-white">{t('recentActivity')}</h3>
           <Link to="/profile" className="text-blue-400 hover:text-blue-300 text-sm flex items-center space-x-1">
             <span>Tümünü Gör</span>
             <Eye className="h-3 w-3" />

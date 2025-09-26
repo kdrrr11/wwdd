@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useLanguage } from '../hooks/useLanguage';
 import { LanguageSelector } from '../components/LanguageSelector';
+import { supportedLanguages } from '../utils/languages';
 import { useNavigate, Link } from 'react-router-dom';
-import { Pickaxe, Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { Pickaxe, Eye, EyeOff, ArrowLeft, Globe } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export const AuthPage: React.FC = () => {
@@ -13,8 +14,9 @@ export const AuthPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [referralCode, setReferralCode] = useState('');
+  const [selectedLanguage, setSelectedLanguage] = useState('');
   
-  const { login, register, resetPassword } = useAuth();
+  const { login, register, resetPassword, updateUserLanguage } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
 
@@ -24,6 +26,12 @@ export const AuthPage: React.FC = () => {
     const refParam = urlParams.get('ref');
     if (refParam) {
       setReferralCode(refParam);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    if (mode === 'register' && !selectedLanguage) {
+      setSelectedLanguage(detectUserLanguage());
     }
   }, []);
 
@@ -60,6 +68,12 @@ export const AuthPage: React.FC = () => {
         toast.success(t('success') + ': Tekrar hoşgeldiniz!');
       } else if (mode === 'register') {
         await register(email, password);
+        
+        // Update user language if selected
+        if (selectedLanguage) {
+          await updateUserLanguage(selectedLanguage);
+        }
+        
         toast.success(t('success') + ': Hesap başarıyla oluşturuldu!');
       } else if (mode === 'reset') {
         await resetPassword(email);
@@ -80,6 +94,7 @@ export const AuthPage: React.FC = () => {
     setMode(newMode);
     setEmail('');
     setPassword('');
+    setSelectedLanguage('');
     setReferralCode('');
   };
 
@@ -96,7 +111,6 @@ export const AuthPage: React.FC = () => {
             <span>Ana Sayfaya Dön</span>
           </Link>
           
-          <LanguageSelector />
         </div>
         
         <div className="bg-gray-800/50 backdrop-blur-md rounded-2xl p-8 border border-gray-700">
@@ -112,6 +126,11 @@ export const AuthPage: React.FC = () => {
                mode === 'register' ? 'Madencilik yolculuğunuzu başlatın' :
                'Şifrenizi sıfırlayın'}
             </p>
+          </div>
+
+          {/* Language Selector at top */}
+          <div className="mb-6 flex justify-center">
+            <LanguageSelector />
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -156,6 +175,28 @@ export const AuthPage: React.FC = () => {
                     {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
                 </div>
+              </div>
+            )}
+
+            {mode === 'register' && (
+              <div>
+                <label htmlFor="language" className="block text-sm font-medium text-gray-300 mb-2">
+                  <Globe className="inline h-4 w-4 mr-2" />
+                  {t('selectLanguage')}
+                </label>
+                <select
+                  id="language"
+                  value={selectedLanguage}
+                  onChange={(e) => setSelectedLanguage(e.target.value)}
+                  className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  disabled={loading}
+                >
+                  {supportedLanguages.map((lang) => (
+                    <option key={lang.code} value={lang.code}>
+                      {lang.flag} {lang.name}
+                    </option>
+                  ))}
+                </select>
               </div>
             )}
 

@@ -1,6 +1,6 @@
 // src/hooks/useLanguage.ts
 import { useState, useEffect, createContext, useContext } from 'react';
-import { detectUserLanguage, getTranslation } from '../utils/languages';
+import { detectUserLanguage, getTranslation, setDocumentLanguage } from '../utils/languages';
 
 interface LanguageContextType {
   language: string;
@@ -24,21 +24,13 @@ export const useLanguage = () => {
 
 export const useLanguageProvider = () => {
   const [language, setLanguageState] = useState(() => {
-    const saved = localStorage.getItem('language');
-    return saved || detectUserLanguage();
+    return detectUserLanguage();
   });
 
   const setLanguage = (lang: string) => {
     setLanguageState(lang);
     localStorage.setItem('language', lang);
-    document.documentElement.lang = lang;
-    
-    // RTL support for Arabic
-    if (lang === 'ar') {
-      document.documentElement.dir = 'rtl';
-    } else {
-      document.documentElement.dir = 'ltr';
-    }
+    setDocumentLanguage(lang);
   };
 
   const t = (key: string): string => {
@@ -46,12 +38,7 @@ export const useLanguageProvider = () => {
   };
 
   useEffect(() => {
-    document.documentElement.lang = language;
-    if (language === 'ar') {
-      document.documentElement.dir = 'rtl';
-    } else {
-      document.documentElement.dir = 'ltr';
-    }
+    setDocumentLanguage(language);
   }, [language]);
 
   return {

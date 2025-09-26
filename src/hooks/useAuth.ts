@@ -1,7 +1,7 @@
 // src/hooks/useAuth.ts
 import { useState, useEffect } from 'react';
 import { User as FirebaseUser, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, sendPasswordResetEmail } from 'firebase/auth';
-import { ref, set, get, onValue, off } from 'firebase/database';
+import { ref, set, get, onValue, update } from 'firebase/database';
 import { auth, database } from '../config/firebase';
 import { User } from '../types';
 import { generateReferralCode, generateDeviceFingerprint } from '../utils/miningCalculations';
@@ -87,7 +87,8 @@ export const useAuth = () => {
               referralEarnings: 0,
               totalReferrals: 0,
               isBanned: false,
-              deviceFingerprint,
+              deviceFingerprint: deviceFingerprint,
+              language: userLanguage,
               lastLoginIP: await getUserIP(),
               language: userLanguage,
               country: userCountry
@@ -318,6 +319,19 @@ export const useAuth = () => {
     }
   };
 
+  // Update user language
+  const updateUserLanguage = async (language: string) => {
+    if (!user) return;
+    
+    try {
+      const userRef = ref(database, `users/${user.uid}`);
+      await update(userRef, { language });
+    } catch (error) {
+      console.error('Failed to update user language:', error);
+      throw new Error('Failed to update language preference');
+    }
+  };
+
   // Helper function to update user data
   const updateUserData = async (updates: Partial<User>) => {
     if (!user) {
@@ -430,6 +444,7 @@ export const useAuth = () => {
     register,
     resetPassword,
     logout,
-    updateUserData
+    updateUserData,
+    updateUserLanguage
   };
 };
