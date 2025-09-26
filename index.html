@@ -98,10 +98,7 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
     <meta name="msapplication-config" content="/browserconfig.xml" />
     
     <!-- Security Headers -->
-    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-    <meta http-equiv="X-Frame-Options" content="DENY" />
-    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
-    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+    <!-- Security headers removed from meta tags - should be set by server -->
     
     <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">
@@ -335,17 +332,7 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
     
     <!-- Service Worker Registration -->
     <script>
-      if ('serviceWorker' in navigator && 'PushManager' in window) {
-        window.addEventListener('load', function() {
-          navigator.serviceWorker.register('/sw.js')
-            .then(function(registration) {
-              console.log('SW registered: ', registration);
-            })
-            .catch(function(registrationError) {
-              console.log('SW registration failed: ', registrationError);
-            });
-        });
-      }
+      // Service Worker registration removed - not needed for this app
     </script>
     
     <!-- Module preload for critical resources -->
@@ -392,13 +379,13 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
     <script type="module" src="/src/main.tsx"></script>
     
     <!-- Google Tag Manager -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FS254NEFYN"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       
-      gtag('config', 'G-XXXXXXXXXX', {
+      gtag('config', 'G-FS254NEFYN', {
         page_title: 'FreeCloudMiner - Ana Sayfa',
         page_location: window.location.href,
         content_group1: 'Ana Sayfa',
@@ -416,7 +403,9 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
       gtag('event', 'page_view', {
         page_title: 'Ana Sayfa',
         page_location: window.location.href,
-        content_group1: 'Landing Page'
+        content_group1: 'Landing Page',
+        content_id: 'homepage',
+        value: 0
       });
     </script>
     
@@ -431,14 +420,18 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
       s.parentNode.insertBefore(t,s)}(window, document,'script',
       'https://connect.facebook.net/tr_TR/fbevents.js');
       
-      fbq('init', 'XXXXXXXXXXXXXXX');
-      fbq('track', 'PageView');
+      fbq('init', '1234567890123456'); // Gerçek Facebook Pixel ID'nizi buraya koyun
+      fbq('track', 'PageView', {
+        content_id: 'homepage',
+        value: 0,
+        currency: 'USD'
+      });
     </script>
     
     <!-- Noscript fallback -->
     <noscript>
       <img height="1" width="1" style="display:none"
-           src="https://www.facebook.com/tr?id=XXXXXXXXXXXXXXX&ev=PageView&noscript=1" />
+           src="https://www.facebook.com/tr?id=1234567890123456&ev=PageView&noscript=1" />
     </noscript>
     
     <!-- Microsoft Clarity -->
@@ -447,14 +440,14 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
           c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
           t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
           y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-      })(window, document, "clarity", "script", "xxxxxxxxxx");
+      })(window, document, "clarity", "script", "abcd1234ef"); // Gerçek Clarity ID'nizi buraya koyun
     </script>
     
     <!-- Hotjar Tracking Code -->
     <script>
       (function(h,o,t,j,a,r){
           h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
-          h._hjSettings={hjid:xxxxxxx,hjsv:6};
+          h._hjSettings={hjid:1234567,hjsv:6}; // Gerçek Hotjar ID'nizi buraya koyun
           a=o.getElementsByTagName('head')[0];
           r=o.createElement('script');r.async=1;
           r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
