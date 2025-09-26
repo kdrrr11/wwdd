@@ -6,8 +6,8 @@ export interface User {
   createdAt: string;
   trialStartDate?: string;
   trialEndDate?: string;
-  totalTrialEarnings: number;
-  balance: number;
+  totalTrialEarnings?: number;
+  balance?: number;
   activePackage?: string | null;
   packageActivatedAt?: string;
   packageExpiresAt?: string;
