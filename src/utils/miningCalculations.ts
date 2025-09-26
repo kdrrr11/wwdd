@@ -116,3 +116,5 @@ export const formatHashRate = (hashRate: number): string => {
     return `${(hashRate / 1000).toFixed(1)}KH/s`;
   }
   return `${hashRate}H/s`;
+
+}
