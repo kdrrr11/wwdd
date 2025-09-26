@@ -1,10 +1,11 @@
 // src/hooks/useAuth.ts
 import { useState, useEffect } from 'react';
-import { User as FirebaseUser, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
+import { User as FirebaseUser, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, sendPasswordResetEmail } from 'firebase/auth';
 import { ref, set, get, onValue, off } from 'firebase/database';
 import { auth, database } from '../config/firebase';
 import { User } from '../types';
 import { generateReferralCode, generateDeviceFingerprint } from '../utils/miningCalculations';
+import { detectUserLanguage } from '../utils/languages';
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -55,9 +56,21 @@ export const useAuth = () => {
                 const referrer = Object.values(users).find((u: any) => u.referralCode === referralParam);
                 if (referrer) {
                   referredBy = (referrer as any).uid;
+                  
+                  // Referans veren kullanıcının referans sayısını artır
+                  const referrerRef = ref(database, `users/${(referrer as any).uid}`);
+                  const referrerData = referrer as any;
+                  await set(referrerRef, {
+                    ...referrerData,
+                    totalReferrals: (referrerData.totalReferrals || 0) + 1
+                  });
                 }
               }
             }
+            
+            // Kullanıcı dilini ve ülkesini tespit et
+            const userLanguage = detectUserLanguage();
+            const userCountry = await getUserCountry();
             
             const newUser: User = {
               uid: firebaseUser.uid,
@@ -72,9 +85,12 @@ export const useAuth = () => {
               referralCode,
               referredBy,
               referralEarnings: 0,
+              totalReferrals: 0,
               isBanned: false,
               deviceFingerprint,
-              lastLoginIP: await getUserIP()
+              lastLoginIP: await getUserIP(),
+              language: userLanguage,
+              country: userCountry
             };
             
             await set(userRef, newUser);
@@ -250,6 +266,46 @@ export const useAuth = () => {
     }
   };
 
+  const resetPassword = async (email: string) => {
+    try {
+      setLoading(true);
+      
+      if (!email) {
+        throw new Error('Email is required');
+      }
+      
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        throw new Error('Invalid email format');
+      }
+      
+      await sendPasswordResetEmail(auth, email);
+      return { success: true };
+    } catch (error: any) {
+      let errorMessage = 'Password reset failed';
+      
+      switch (error.code) {
+        case 'auth/user-not-found':
+          errorMessage = 'No account found with this email';
+          break;
+        case 'auth/invalid-email':
+          errorMessage = 'Invalid email address';
+          break;
+        case 'auth/too-many-requests':
+          errorMessage = 'Too many requests. Please try again later';
+          break;
+        default:
+          errorMessage = error.message || 'Password reset failed';
+      }
+      
+      console.error('Password reset error:', error);
+      throw new Error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const logout = async () => {
     try {
       setLoading(true);
@@ -284,6 +340,17 @@ export const useAuth = () => {
       const response = await fetch('https://api.ipify.org?format=json');
       const data = await response.json();
       return data.ip;
+    } catch (error) {
+      return 'unknown';
+    }
+  };
+
+  // Kullanıcı ülkesi alma
+  const getUserCountry = async (): Promise<string> => {
+    try {
+      const response = await fetch('https://ipapi.co/json/');
+      const data = await response.json();
+      return data.country_code || 'unknown';
     } catch (error) {
       return 'unknown';
     }
@@ -361,6 +428,7 @@ export const useAuth = () => {
     loading,
     login,
     register,
+    resetPassword,
     logout,
     updateUserData
   };

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { ref, onValue, set, push, get } from 'firebase/database';
+import { ref, onValue, set, push, get, update } from 'firebase/database';
 import { database } from '../config/firebase';
 import { useAuth } from '../hooks/useAuth';
-import { PaymentNotification, WithdrawalRequest, User, ReferralBonus } from '../types';
-import { Check, X, Eye, DollarSign, Users, Package, AlertCircle } from 'lucide-react';
+import { PaymentNotification, WithdrawalRequest, User, ReferralBonus, SupportTicket } from '../types';
+import { Check, X, Eye, DollarSign, Users, Package, AlertCircle, MessageCircle, UserCheck } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 import { calculateReferralBonus } from '../utils/miningCalculations';
@@ -13,7 +13,9 @@ export const AdminPage: React.FC = () => {
   const [paymentNotifications, setPaymentNotifications] = useState<PaymentNotification[]>([]);
   const [withdrawalRequests, setWithdrawalRequests] = useState<WithdrawalRequest[]>([]);
   const [users, setUsers] = useState<User[]>([]);
-  const [activeTab, setActiveTab] = useState<'payments' | 'withdrawals' | 'users'>('payments');
+  const [supportTickets, setSupportTickets] = useState<SupportTicket[]>([]);
+  const [referralBonuses, setReferralBonuses] = useState<ReferralBonus[]>([]);
+  const [activeTab, setActiveTab] = useState<'payments' | 'withdrawals' | 'users' | 'support' | 'referrals'>('payments');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -55,10 +57,36 @@ export const AdminPage: React.FC = () => {
       }
     });
 
+    // Load support tickets
+    const supportRef = ref(database, 'supportTickets');
+    const supportUnsubscribe = onValue(supportRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const tickets = Object.entries(snapshot.val()).map(([key, value]: [string, any]) => ({
+          id: key,
+          ...value
+        }));
+        setSupportTickets(tickets.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
+      }
+    });
+
+    // Load referral bonuses
+    const referralRef = ref(database, 'referralBonuses');
+    const referralUnsubscribe = onValue(referralRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const bonuses = Object.entries(snapshot.val()).map(([key, value]: [string, any]) => ({
+          id: key,
+          ...value
+        }));
+        setReferralBonuses(bonuses.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
+      }
+    });
+
     return () => {
       paymentsUnsubscribe();
       withdrawalsUnsubscribe();
       usersUnsubscribe();
+      supportUnsubscribe();
+      referralUnsubscribe();
     };
   }, [user]);
 
@@ -83,10 +111,18 @@ export const AdminPage: React.FC = () => {
         
         if (userSnapshot.exists()) {
           const userData = userSnapshot.val();
+          
+          // Calculate package expiry date
+          const packageDuration = notification.packageId === 'starter' ? 30 : 
+                                 notification.packageId === 'professional' ? 60 : 90;
+          const expiryDate = new Date();
+          expiryDate.setDate(expiryDate.getDate() + packageDuration);
+          
           await set(userRef, {
             ...userData,
             activePackage: notification.packageId,
-            packageActivatedAt: new Date().toISOString()
+            packageActivatedAt: new Date().toISOString(),
+            packageExpiresAt: expiryDate.toISOString()
           });
 
           // Referans bonusu kontrolü ve ödeme
@@ -165,14 +201,91 @@ export const AdminPage: React.FC = () => {
     setLoading(false);
   };
 
+  const handleSupportTicket = async (ticketId: string, status: 'in-progress' | 'closed', adminResponse?: string) => {
+    setLoading(true);
+    try {
+      const ticket = supportTickets.find(t => t.id === ticketId);
+      if (!ticket) return;
+
+      await set(ref(database, `supportTickets/${ticketId}`), {
+        ...ticket,
+        status,
+        updatedAt: new Date().toISOString(),
+        adminResponse: adminResponse || ticket.adminResponse,
+        adminId: user?.uid
+      });
+
+      toast.success(`Destek talebi ${status === 'closed' ? 'kapatıldı' : 'işleme alındı'}`);
+    } catch (error) {
+      toast.error('Destek talebi güncellenemedi');
+    }
+    setLoading(false);
+  };
+
+  const banUser = async (userId: string, reason: string) => {
+    setLoading(true);
+    try {
+      const userRef = ref(database, `users/${userId}`);
+      const userSnapshot = await get(userRef);
+      
+      if (userSnapshot.exists()) {
+        const userData = userSnapshot.val();
+        await set(userRef, {
+          ...userData,
+          isBanned: true,
+          banReason: reason,
+          bannedAt: new Date().toISOString(),
+          bannedBy: user?.uid
+        });
+        
+        toast.success('Kullanıcı banlandı');
+      }
+    } catch (error) {
+      toast.error('Kullanıcı banlanamadı');
+    }
+    setLoading(false);
+  };
+
+  const unbanUser = async (userId: string) => {
+    setLoading(true);
+    try {
+      const userRef = ref(database, `users/${userId}`);
+      const userSnapshot = await get(userRef);
+      
+      if (userSnapshot.exists()) {
+        const userData = userSnapshot.val();
+        const { isBanned, banReason, bannedAt, bannedBy, ...cleanUserData } = userData;
+        await set(userRef, cleanUserData);
+        
+        toast.success('Kullanıcı ban kaldırıldı');
+      }
+    } catch (error) {
+      toast.error('Ban kaldırılamadı');
+    }
+    setLoading(false);
+  };
+
   const getStatusText = (status: string) => {
     switch (status) {
       case 'pending': return 'beklemede';
       case 'approved': return 'onaylandı';
       case 'rejected': return 'reddedildi';
       case 'completed': return 'tamamlandı';
+      case 'open': return 'açık';
+      case 'in-progress': return 'işlemde';
+      case 'closed': return 'kapalı';
       default: return status;
     }
+  };
+
+  const getTotalReferralEarnings = () => {
+    return referralBonuses
+      .filter(bonus => bonus.status === 'paid')
+      .reduce((total, bonus) => total + bonus.bonusAmount, 0);
+  };
+
+  const getUserReferralCount = (userId: string) => {
+    return users.filter(u => u.referredBy === userId).length;
   };
 
   if (!user?.isAdmin) {
@@ -208,6 +321,20 @@ export const AdminPage: React.FC = () => {
       icon: Package,
       color: 'text-green-400',
       bgColor: 'bg-green-600/20'
+    },
+    {
+      label: 'Açık Destek Talepleri',
+      value: supportTickets.filter(t => t.status === 'open').length.toString(),
+      icon: MessageCircle,
+      color: 'text-purple-400',
+      bgColor: 'bg-purple-600/20'
+    },
+    {
+      label: 'Toplam Referans Bonusu',
+      value: `$${getTotalReferralEarnings().toFixed(2)}`,
+      icon: UserCheck,
+      color: 'text-orange-400',
+      bgColor: 'bg-orange-600/20'
     }
   ];
 
@@ -219,18 +346,18 @@ export const AdminPage: React.FC = () => {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         {stats.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <div key={index} className="bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-gray-700">
+            <div key={index} className="bg-gray-800/50 backdrop-blur-md rounded-xl p-4 border border-gray-700">
               <div className="flex items-center space-x-4">
                 <div className={`p-3 rounded-lg ${stat.bgColor}`}>
                   <Icon className={`h-6 w-6 ${stat.color}`} />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-400">{stat.label}</p>
-                  <p className="text-2xl font-bold text-white">{stat.value}</p>
+                  <p className="text-xs text-gray-400">{stat.label}</p>
+                  <p className="text-lg font-bold text-white">{stat.value}</p>
                 </div>
               </div>
             </div>
@@ -243,7 +370,9 @@ export const AdminPage: React.FC = () => {
         {[
           { id: 'payments', label: 'Ödeme Bildirimleri' },
           { id: 'withdrawals', label: 'Para Çekme Talepleri' },
-          { id: 'users', label: 'Kullanıcı Yönetimi' }
+          { id: 'users', label: 'Kullanıcı Yönetimi' },
+          { id: 'support', label: 'Destek Talepleri' },
+          { id: 'referrals', label: 'Referans Sistemi' }
         ].map((tab) => (
           <button
             key={tab.id}
@@ -374,6 +503,142 @@ export const AdminPage: React.FC = () => {
         </div>
       )}
 
+      {/* Support Tickets */}
+      {activeTab === 'support' && (
+        <div className="bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-gray-700">
+          <h3 className="text-xl font-semibold text-white mb-6">Destek Talepleri</h3>
+          <div className="space-y-4">
+            {supportTickets.length === 0 ? (
+              <p className="text-gray-400 text-center py-8">Destek talebi yok</p>
+            ) : (
+              supportTickets.map((ticket) => {
+                const ticketUser = users.find(u => u.uid === ticket.userId);
+                return (
+                  <div key={ticket.id} className="bg-gray-700/50 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <p className="text-white font-medium">{ticket.subject}</p>
+                        <p className="text-sm text-gray-400">
+                          Kullanıcı: {ticketUser?.email || 'Bilinmiyor'}
+                        </p>
+                        <p className="text-sm text-gray-400">
+                          Öncelik: <span className={`font-medium ${
+                            ticket.priority === 'high' ? 'text-red-400' :
+                            ticket.priority === 'medium' ? 'text-yellow-400' : 'text-green-400'
+                          }`}>{ticket.priority}</span>
+                        </p>
+                        <p className="text-sm text-gray-400">
+                          Tarih: {format(new Date(ticket.createdAt), 'dd MMM yyyy HH:mm')}
+                        </p>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className={`px-2 py-1 rounded text-xs font-medium ${
+                          ticket.status === 'open' ? 'bg-blue-600/20 text-blue-400' :
+                          ticket.status === 'in-progress' ? 'bg-yellow-600/20 text-yellow-400' :
+                          'bg-green-600/20 text-green-400'
+                        }`}>
+                          {getStatusText(ticket.status)}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="mb-4">
+                      <p className="text-gray-300 text-sm">{ticket.message}</p>
+                    </div>
+                    
+                    {ticket.adminResponse && (
+                      <div className="bg-blue-600/20 border border-blue-500/30 rounded-lg p-3 mb-4">
+                        <p className="text-blue-400 font-medium text-sm mb-1">Admin Yanıtı:</p>
+                        <p className="text-blue-200 text-sm">{ticket.adminResponse}</p>
+                      </div>
+                    )}
+                    
+                    {ticket.status !== 'closed' && (
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => handleSupportTicket(ticket.id, 'in-progress')}
+                          disabled={loading}
+                          className="px-3 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg text-sm disabled:opacity-50"
+                        >
+                          İşleme Al
+                        </button>
+                        <button
+                          onClick={() => {
+                            const response = prompt('Admin yanıtı (isteğe bağlı):');
+                            handleSupportTicket(ticket.id, 'closed', response || undefined);
+                          }}
+                          disabled={loading}
+                          className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm disabled:opacity-50"
+                        >
+                          Kapat
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Referral System */}
+      {activeTab === 'referrals' && (
+        <div className="bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-gray-700">
+          <h3 className="text-xl font-semibold text-white mb-6">Referans Sistemi</h3>
+          
+          {/* Referral Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div className="bg-gray-700/50 rounded-lg p-4">
+              <h4 className="text-white font-medium mb-2">Toplam Referans Bonusu</h4>
+              <p className="text-2xl font-bold text-green-400">${getTotalReferralEarnings().toFixed(2)}</p>
+            </div>
+            <div className="bg-gray-700/50 rounded-lg p-4">
+              <h4 className="text-white font-medium mb-2">Aktif Referanslar</h4>
+              <p className="text-2xl font-bold text-blue-400">
+                {users.filter(u => u.referredBy).length}
+              </p>
+            </div>
+            <div className="bg-gray-700/50 rounded-lg p-4">
+              <h4 className="text-white font-medium mb-2">Bekleyen Bonuslar</h4>
+              <p className="text-2xl font-bold text-yellow-400">
+                ${referralBonuses
+                  .filter(b => b.status === 'pending')
+                  .reduce((total, b) => total + b.bonusAmount, 0)
+                  .toFixed(2)}
+              </p>
+            </div>
+          </div>
+          
+          {/* Top Referrers */}
+          <div className="mb-6">
+            <h4 className="text-white font-medium mb-4">En Çok Referans Yapanlar</h4>
+            <div className="space-y-2">
+              {users
+                .map(user => ({
+                  ...user,
+                  referralCount: getUserReferralCount(user.uid)
+                }))
+                .filter(user => user.referralCount > 0)
+                .sort((a, b) => b.referralCount - a.referralCount)
+                .slice(0, 10)
+                .map((user, index) => (
+                  <div key={user.uid} className="flex items-center justify-between bg-gray-700/30 rounded-lg p-3">
+                    <div className="flex items-center space-x-3">
+                      <span className="text-gray-400 font-medium">#{index + 1}</span>
+                      <span className="text-white">{user.email}</span>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <span className="text-blue-400">{user.referralCount} referans</span>
+                      <span className="text-green-400">${(user.referralEarnings || 0).toFixed(2)}</span>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* User Management */}
       {activeTab === 'users' && (
         <div className="bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-gray-700">
@@ -385,8 +650,10 @@ export const AdminPage: React.FC = () => {
                   <th className="pb-3 text-gray-400">E-posta</th>
                   <th className="pb-3 text-gray-400">Bakiye</th>
                   <th className="pb-3 text-gray-400">Paket</th>
-                  <th className="pb-3 text-gray-400">Deneme Kazancı</th>
+                  <th className="pb-3 text-gray-400">Referans</th>
+                  <th className="pb-3 text-gray-400">Durum</th>
                   <th className="pb-3 text-gray-400">Katılım</th>
+                  <th className="pb-3 text-gray-400">İşlemler</th>
                 </tr>
               </thead>
               <tbody>
@@ -395,9 +662,40 @@ export const AdminPage: React.FC = () => {
                     <td className="py-3 text-white">{userData.email}</td>
                     <td className="py-3 text-green-400">${userData.balance.toFixed(2)}</td>
                     <td className="py-3 text-white">{userData.activePackage || 'Ücretsiz Deneme'}</td>
-                    <td className="py-3 text-blue-400">${userData.totalTrialEarnings.toFixed(2)}</td>
+                    <td className="py-3 text-blue-400">{getUserReferralCount(userData.uid)}</td>
+                    <td className="py-3">
+                      <span className={`px-2 py-1 rounded text-xs font-medium ${
+                        userData.isBanned ? 'bg-red-600/20 text-red-400' : 'bg-green-600/20 text-green-400'
+                      }`}>
+                        {userData.isBanned ? 'Banlı' : 'Aktif'}
+                      </span>
+                    </td>
                     <td className="py-3 text-gray-400">
                       {format(new Date(userData.createdAt), 'dd MMM yyyy')}
+                    </td>
+                    <td className="py-3">
+                      <div className="flex space-x-2">
+                        {userData.isBanned ? (
+                          <button
+                            onClick={() => unbanUser(userData.uid)}
+                            disabled={loading}
+                            className="px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs disabled:opacity-50"
+                          >
+                            Ban Kaldır
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => {
+                              const reason = prompt('Ban sebebi:');
+                              if (reason) banUser(userData.uid, reason);
+                            }}
+                            disabled={loading}
+                            className="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs disabled:opacity-50"
+                          >
+                            Banla
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}

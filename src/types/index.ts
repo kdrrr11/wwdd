@@ -10,14 +10,18 @@ export interface User {
   balance: number;
   activePackage?: string | null;
   packageActivatedAt?: string;
+  packageExpiresAt?: string;
   isAdmin?: boolean;
   referredBy?: string; // Referans veren kullanıcının UID'si
   referralCode?: string; // Kullanıcının kendi referans kodu
   referralEarnings?: number; // Referans kazançları
+  totalReferrals?: number; // Toplam referans sayısı
   isBanned?: boolean; // Ban durumu
   banReason?: string; // Ban sebebi
   lastLoginIP?: string; // Son giriş IP'si (güvenlik için)
   deviceFingerprint?: string; // Cihaz parmak izi
+  language?: string; // Kullanıcı dili
+  country?: string; // Kullanıcı ülkesi
 }
 
 export interface Package {
@@ -30,6 +34,7 @@ export interface Package {
   weeklyWithdrawal: boolean;
   description: string;
   popular?: boolean;
+  maxDuration?: number; // Maksimum süre (gün)
 }
 
 export interface MiningSession {
@@ -46,6 +51,8 @@ export interface MiningSession {
   createdAt?: string; // Güvenlik için oluşturulma zamanı
   lastServerUpdate?: number; // Server timestamp for validation
   userAgent?: string; // Güvenlik için user agent
+  autoStopped?: boolean; // Otomatik durduruldu mu
+  stopReason?: string; // Durdurulma sebebi
 }
 
 export interface PaymentNotification {
@@ -81,6 +88,9 @@ export interface Coin {
   baseHashRate: number;
   baseEarning: number;
   color: string;
+  description?: string;
+  marketCap?: string;
+  dailyVolume?: string;
 }
 
 export interface ReferralBonus {
@@ -103,4 +113,27 @@ export interface SecurityLog {
   deviceFingerprint: string;
   timestamp: string;
   suspicious: boolean;
+}
+
+export interface SupportTicket {
+  id: string;
+  userId: string;
+  subject: string;
+  message: string;
+  status: 'open' | 'in-progress' | 'closed';
+  priority: 'low' | 'medium' | 'high';
+  createdAt: string;
+  updatedAt?: string;
+  adminResponse?: string;
+  adminId?: string;
+}
+
+export interface Language {
+  code: string;
+  name: string;
+  flag: string;
+}
+
+export interface Translation {
+  [key: string]: string | Translation;
 }

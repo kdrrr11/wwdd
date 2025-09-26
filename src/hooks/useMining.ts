@@ -23,7 +23,10 @@ export const useMining = () => {
       icon: '₿', 
       baseHashRate: 1000, 
       baseEarning: 0.001, 
-      color: '#F7931A' 
+      color: '#F7931A',
+      description: 'The first and most valuable cryptocurrency',
+      marketCap: '$1.2T',
+      dailyVolume: '$15B'
     },
     { 
       id: 'eth', 
@@ -32,7 +35,10 @@ export const useMining = () => {
       icon: 'Ξ', 
       baseHashRate: 2500, 
       baseEarning: 0.003, 
-      color: '#627EEA' 
+      color: '#627EEA',
+      description: 'Smart contract platform and DeFi leader',
+      marketCap: '$400B',
+      dailyVolume: '$8B'
     },
     { 
       id: 'doge', 
@@ -41,7 +47,10 @@ export const useMining = () => {
       icon: 'Ð', 
       baseHashRate: 5000, 
       baseEarning: 0.8, 
-      color: '#C2A633' 
+      color: '#C2A633',
+      description: 'The meme coin that became mainstream',
+      marketCap: '$25B',
+      dailyVolume: '$800M'
     },
     { 
       id: 'ltc', 
@@ -50,8 +59,59 @@ export const useMining = () => {
       icon: 'Ł', 
       baseHashRate: 3000, 
       baseEarning: 0.015, 
-      color: '#BFBBBB' 
+      color: '#BFBBBB',
+      description: 'Digital silver to Bitcoin\'s gold',
+      marketCap: '$8B',
+      dailyVolume: '$400M'
     },
+    {
+      id: 'ada',
+      name: 'Cardano',
+      symbol: 'ADA',
+      icon: '₳',
+      baseHashRate: 4000,
+      baseEarning: 0.25,
+      color: '#0033AD',
+      description: 'Sustainable blockchain platform',
+      marketCap: '$15B',
+      dailyVolume: '$300M'
+    },
+    {
+      id: 'dot',
+      name: 'Polkadot',
+      symbol: 'DOT',
+      icon: '●',
+      baseHashRate: 3500,
+      baseEarning: 0.18,
+      color: '#E6007A',
+      description: 'Multi-chain interoperability protocol',
+      marketCap: '$12B',
+      dailyVolume: '$250M'
+    },
+    {
+      id: 'sol',
+      name: 'Solana',
+      symbol: 'SOL',
+      icon: '◎',
+      baseHashRate: 6000,
+      baseEarning: 0.35,
+      color: '#9945FF',
+      description: 'High-performance blockchain',
+      marketCap: '$45B',
+      dailyVolume: '$1.2B'
+    },
+    {
+      id: 'matic',
+      name: 'Polygon',
+      symbol: 'MATIC',
+      icon: '⬟',
+      baseHashRate: 7000,
+      baseEarning: 0.45,
+      color: '#8247E5',
+      description: 'Ethereum scaling solution',
+      marketCap: '$8B',
+      dailyVolume: '$200M'
+    }
   ];
 
   // Load mining sessions
@@ -130,6 +190,18 @@ export const useMining = () => {
         toast.error('Güvenlik nedeniyle mining durduruldu');
         return;
       }
+
+      // Check if package has expired
+      if (user.activePackage && user.packageExpiresAt) {
+        const packageExpiry = new Date(user.packageExpiresAt);
+        if (now > packageExpiry.getTime()) {
+          console.log('Package expired, stopping mining');
+          await stopMining(activeSession.id, 'Package expired');
+          toast.error('Paket süresi doldu, madencilik durduruldu');
+          return;
+        }
+      }
+
       const coin = coins.find(c => c.id === activeSession.coin);
       if (!coin) return;
 
@@ -180,9 +252,19 @@ export const useMining = () => {
         const newTrialEarnings = user.totalTrialEarnings + totalEarnings - activeSession.totalEarned;
         if (newTrialEarnings >= 25) {
           // Stop mining when trial limit reached
-          await stopMining(activeSession.id);
+          await stopMining(activeSession.id, 'Trial limit reached');
           toast.error('Trial earning limit reached! Please upgrade to continue mining.');
           return;
+        }
+        
+        // Check trial time limit (90 days)
+        if (user.trialEndDate) {
+          const trialEnd = new Date(user.trialEndDate);
+          if (now > trialEnd.getTime()) {
+            await stopMining(activeSession.id, 'Trial period expired');
+            toast.error('Trial period expired! Please upgrade to continue mining.');
+            return;
+          }
         }
       }
 
@@ -306,7 +388,7 @@ export const useMining = () => {
     setIsLoading(false);
   }, [user, activeSessions, isLoading]);
 
-  const stopMining = useCallback(async (sessionId: string) => {
+  const stopMining = useCallback(async (sessionId: string, reason?: string) => {
     if (!user || isLoading) return;
 
     setIsLoading(true);
@@ -322,13 +404,17 @@ export const useMining = () => {
       await set(ref(database, `miningSessions/${user.uid}/${sessionId}`), {
         ...session,
         isActive: false,
-        endTime: new Date().toISOString()
+        endTime: new Date().toISOString(),
+        autoStopped: !!reason,
+        stopReason: reason
       });
       
       // Session referansını temizle
       delete sessionStartRef.current[sessionId];
 
-      toast.success(`${coin?.name || 'Mining'} stopped successfully!`);
+      if (!reason) {
+        toast.success(`${coin?.name || 'Mining'} stopped successfully!`);
+      }
 
     } catch (error) {
       console.error('Error stopping mining:', error);

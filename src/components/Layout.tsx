@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { useLanguage } from '../hooks/useLanguage';
+import { LanguageSelector } from './LanguageSelector';
 import { 
   Home, 
   Pickaxe, 
@@ -11,7 +13,8 @@ import {
   Menu, 
   X,
   DollarSign,
-  Shield
+  Shield,
+  MessageCircle
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -21,6 +24,7 @@ interface LayoutProps {
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { user, logout } = useAuth();
+  const { t } = useLanguage();
   const location = useLocation();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -45,12 +49,13 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   const navItems = [
-    { path: '/dashboard', label: 'Dashboard', icon: Home },
-    { path: '/mining', label: 'Madencilik', icon: Pickaxe },
-    { path: '/packages', label: 'Paketler', icon: Package },
-    { path: '/withdrawal', label: 'Para Çekme', icon: DollarSign },
-    { path: '/profile', label: 'Profil', icon: User },
-    ...(user?.isAdmin ? [{ path: '/admin', label: 'Admin', icon: Shield }] : [])
+    { path: '/dashboard', label: t('dashboard'), icon: Home },
+    { path: '/mining', label: t('mining'), icon: Pickaxe },
+    { path: '/packages', label: t('packages'), icon: Package },
+    { path: '/withdrawal', label: t('withdrawal'), icon: DollarSign },
+    { path: '/support', label: t('support'), icon: MessageCircle },
+    { path: '/profile', label: t('profile'), icon: User },
+    ...(user?.isAdmin ? [{ path: '/admin', label: t('admin'), icon: Shield }] : [])
   ];
 
   return (
@@ -64,7 +69,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
               <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
                 <Pickaxe className="h-5 w-5 text-white" />
               </div>
-              <span className="text-xl font-bold text-white">CloudMiner</span>
+              <span className="text-xl font-bold text-white">CryptoCloud</span>
             </div>
           </div>
 
@@ -92,6 +97,11 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
           {/* User Info & Logout */}
           <div className="flex-shrink-0 border-t border-gray-700 p-4">
+            {/* Language Selector */}
+            <div className="mb-4">
+              <LanguageSelector />
+            </div>
+            
             <div className="flex items-center space-x-3 mb-3">
               <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-blue-500 rounded-full flex items-center justify-center">
                 <User className="h-4 w-4 text-white" />
@@ -110,7 +120,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
               className="group flex w-full items-center px-2 py-2 text-sm font-medium text-gray-300 rounded-md hover:bg-red-600 hover:text-white transition-colors"
             >
               <LogOut className="mr-3 h-5 w-5" />
-              Çıkış Yap
+              {t('logout')}
             </button>
           </div>
         </div>
@@ -123,7 +133,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
               <Pickaxe className="h-5 w-5 text-white" />
             </div>
-            <span className="text-xl font-bold text-white">CloudMiner</span>
+            <span className="text-xl font-bold text-white">CryptoCloud</span>
           </div>
           
           <button
@@ -158,7 +168,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                   <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
                     <Pickaxe className="h-5 w-5 text-white" />
                   </div>
-                  <span className="text-xl font-bold text-white">CloudMiner</span>
+                  <span className="text-xl font-bold text-white">CryptoCloud</span>
                 </div>
                 <button
                   onClick={closeMobileMenu}
@@ -184,6 +194,11 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                     </p>
                   </div>
                 </div>
+              </div>
+
+              {/* Language Selector */}
+              <div className="px-4 py-4 border-b border-gray-700">
+                <LanguageSelector />
               </div>
 
               {/* Navigation Links */}
@@ -219,7 +234,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                   className="group flex w-full items-center px-3 py-3 text-base font-medium text-gray-300 rounded-lg hover:bg-red-600/80 hover:text-white active:bg-red-700 transition-all duration-200"
                 >
                   <LogOut className="mr-3 h-5 w-5" />
-                  Çıkış Yap
+                  {t('logout')}
                 </button>
               </div>
             </div>
@@ -239,7 +254,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       {/* Mobile Bottom Navigation */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-gray-800/95 backdrop-blur-md border-t border-gray-700 z-40">
         <div className="grid grid-cols-4 gap-1 px-2 py-2">
-          {navItems.slice(0, 4).map((item) => {
+          {navItems.filter(item => !item.path.includes('/admin')).slice(0, 4).map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
             return (
