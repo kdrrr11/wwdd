@@ -29,6 +29,14 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
     await logout();
     setMobileMenuOpen(false);
   };
+  
+  const handleMobileMenuToggle = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+  
+  const handleMobileNavClick = () => {
+    setMobileMenuOpen(false);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900">
@@ -84,8 +92,10 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
               {/* Mobile Menu Button */}
               <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                onClick={handleMobileMenuToggle}
                 className="lg:hidden flex items-center justify-center w-10 h-10 rounded-md text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
+                aria-label="Menüyü aç/kapat"
+                aria-expanded={mobileMenuOpen}
               >
                 {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </button>
@@ -94,53 +104,64 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         </div>
 
         {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="lg:hidden border-t border-gray-700 bg-gray-800/50 backdrop-blur-md">
-            <div className="px-4 py-4 space-y-2">
-              {/* User Info Mobile */}
-              <div className="flex items-center justify-between pb-4 border-b border-gray-700">
-                <div>
-                  <p className="text-sm text-gray-300 truncate">{user?.email}</p>
-                  <p className="text-xs text-blue-400">Bakiye: ${user?.balance.toFixed(2)}</p>
-                </div>
+        <div className={`lg:hidden border-t border-gray-700 bg-gray-800/95 backdrop-blur-md transition-all duration-300 ease-in-out ${
+          mobileMenuOpen 
+            ? 'max-h-screen opacity-100 visible' 
+            : 'max-h-0 opacity-0 invisible overflow-hidden'
+        }`}>
+          <div className="px-4 py-4 space-y-2">
+            {/* User Info Mobile */}
+            <div className="flex items-center justify-between pb-4 border-b border-gray-700">
+              <div>
+                <p className="text-sm text-gray-300 truncate">{user?.email}</p>
+                <p className="text-xs text-blue-400">Bakiye: ${user?.balance.toFixed(2)}</p>
               </div>
-              
-              {/* Navigation Links */}
-              {navigation.map((item) => {
-                const Icon = item.icon;
-                const isActive = location.pathname === item.href;
-                return (
-                  <Link
-                    key={item.name}
-                    to={item.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center space-x-3 px-3 py-3 rounded-md font-medium transition-colors ${
-                      isActive
-                        ? 'text-blue-400 bg-blue-400/10'
-                        : 'text-gray-300 hover:text-white hover:bg-gray-700'
-                    }`}
-                  >
-                    <Icon className="h-5 w-5" />
-                    <span>{item.name}</span>
-                  </Link>
-                );
-              })}
-              
-              {/* Mobile Logout */}
-              <button
-                onClick={handleLogout}
-                className="flex items-center space-x-3 w-full px-3 py-3 rounded-md font-medium text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
-              >
-                <LogOut className="h-5 w-5" />
-                <span>Çıkış Yap</span>
-              </button>
             </div>
+            
+            {/* Navigation Links */}
+            {navigation.map((item) => {
+              const Icon = item.icon;
+              const isActive = location.pathname === item.href;
+              return (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  onClick={handleMobileNavClick}
+                  className={`flex items-center space-x-3 px-3 py-3 rounded-md font-medium transition-colors ${
+                    isActive
+                      ? 'text-blue-400 bg-blue-400/10'
+                      : 'text-gray-300 hover:text-white hover:bg-gray-700'
+                  }`}
+                >
+                  <Icon className="h-5 w-5" />
+                  <span>{item.name}</span>
+                </Link>
+              );
+            })}
+            
+            {/* Mobile Logout */}
+            <button
+              onClick={handleLogout}
+              className="flex items-center space-x-3 w-full px-3 py-3 rounded-md font-medium text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
+            >
+              <LogOut className="h-5 w-5" />
+              <span>Çıkış Yap</span>
+            </button>
           </div>
-        )}
+        </div>
       </nav>
 
+      {/* Overlay for mobile menu */}
+      {mobileMenuOpen && (
+        <div 
+          className="lg:hidden fixed inset-0 bg-black/50 z-40 transition-opacity duration-300"
+          onClick={handleMobileMenuToggle}
+          aria-hidden="true"
+        />
+      )}
+
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8 relative z-30">
         <div className="min-h-[calc(100vh-8rem)]">
           {children}
         </div>
@@ -169,14 +190,13 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           })}
         </div>
       </div>
-
-      {/* Overlay for mobile menu */}
-      {mobileMenuOpen && (
-        <div 
-          className="lg:hidden fixed inset-0 bg-black/50 z-40"
-          onClick={() => setMobileMenuOpen(false)}
-        />
-      )}
     </div>
   );
 };
+
+// Eski kod kaldırıldı - artık gereksiz
+/*
+        {mobileMenuOpen && (
+          <div className="lg:hidden border-t border-gray-700 bg-gray-800/50 backdrop-blur-md">
+            <div className="px-4 py-4 space-y-2">
+              {/* User Info Mobile */}
