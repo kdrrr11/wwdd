@@ -175,3 +175,21 @@ export const generateDeviceFingerprint = (): string => {
   
   return Math.abs(hash).toString(16);
 };
+
+export const generateReferralCode = (userId: string): string => {
+  // Kullanıcı ID'sinden referans kodu oluştur
+  const timestamp = Date.now().toString();
+  const combined = userId + timestamp;
+  
+  // Basit hash fonksiyonu
+  let hash = 0;
+  for (let i = 0; i < combined.length; i++) {
+    const char = combined.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // 32bit integer'a çevir
+  }
+  
+  // 8 karakterlik referans kodu oluştur
+  const code = Math.abs(hash).toString(36).toUpperCase().substring(0, 8);
+  return code.padStart(8, '0');
+};
