@@ -27,7 +27,16 @@ export const useAuth = () => {
             userDataUnsubscribe = onValue(userRef, (userSnapshot) => {
               if (userSnapshot.exists()) {
                 const userData = userSnapshot.val();
-                setUser(userData);
+                
+                // Mevcut kullanıcılar için referans kodu yoksa ekle
+                if (!userData.referralCode) {
+                  const referralCode = generateReferralCode(firebaseUser.uid);
+                  const updatedUserData = { ...userData, referralCode };
+                  set(userRef, updatedUserData);
+                  setUser(updatedUserData);
+                } else {
+                  setUser(userData);
+                }
               } else {
                 console.warn('User data not found in database');
                 setUser(null);

@@ -11,7 +11,7 @@ export const ReferralSystem: React.FC = () => {
 
   if (!user) return null;
 
-  const referralLink = `${window.location.origin}?ref=${user.referralCode}`;
+  const referralLink = `${window.location.origin}/auth?ref=${user.referralCode || 'LOADING'}`;
 
   const copyReferralLink = async () => {
     try {
@@ -70,7 +70,7 @@ export const ReferralSystem: React.FC = () => {
             <p className="text-xs text-gray-400">Davet Edilen</p>
           </div>
           <p className="text-lg font-bold text-blue-400">0</p>
-        </div>
+            {user.totalReferrals || 0}
       </div>
 
       {/* Referral Link */}
@@ -115,7 +115,7 @@ export const ReferralSystem: React.FC = () => {
             Paylaşım linkinizi kendi URL'nizle oluşturun ve kullanıcı ID'nizi ekleyin. Örneğin:
           </p>
           <div className="bg-gray-700/50 p-2 rounded font-mono text-blue-300">
-            https://sitemiz.com/register?ref=KULLANICI_ID
+            {referralLink}
           </div>
           <p>
             Bu link üzerinden kayıt olan kullanıcılar sisteme otomatik olarak eklenecek. 

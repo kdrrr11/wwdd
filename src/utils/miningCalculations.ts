@@ -193,8 +193,9 @@ export const generateDeviceFingerprint = async (): Promise<string> => {
 
 export const generateReferralCode = (userId: string): string => {
   // Kullanıcı ID'sinden referans kodu oluştur
-  const timestamp = Date.now().toString();
-  const combined = userId + timestamp;
+  const timestamp = Date.now().toString().slice(-6); // Son 6 hane
+  const userIdHash = userId.slice(-6); // User ID'nin son 6 hanesi
+  const combined = userIdHash + timestamp;
   
   // Basit hash fonksiyonu
   let hash = 0;
@@ -204,9 +205,9 @@ export const generateReferralCode = (userId: string): string => {
     hash = hash & hash; // 32bit integer'a çevir
   }
   
-  // 8 karakterlik referans kodu oluştur
-  const code = Math.abs(hash).toString(36).toUpperCase().substring(0, 8);
-  return code.padStart(8, '0');
+  // 6 karakterlik referans kodu oluştur
+  const code = Math.abs(hash).toString(36).toUpperCase().substring(0, 6);
+  return code.padStart(6, '0');
 };
 
 export const calculateReferralBonus = (amount: number): number => {
