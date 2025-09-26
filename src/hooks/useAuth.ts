@@ -83,14 +83,13 @@ export const useAuth = () => {
               balance: 0,
               isAdmin: false,
               referralCode,
-              referredBy,
+              ...(referredBy && { referredBy }),
               referralEarnings: 0,
               totalReferrals: 0,
               isBanned: false,
               deviceFingerprint: deviceFingerprint,
               language: userLanguage,
               lastLoginIP: await getUserIP(),
-              language: userLanguage,
               country: userCountry
             };
             
