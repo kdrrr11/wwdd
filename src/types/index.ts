@@ -11,6 +11,13 @@ export interface User {
   activePackage?: string | null;
   packageActivatedAt?: string;
   isAdmin?: boolean;
+  referredBy?: string; // Referans veren kullanıcının UID'si
+  referralCode?: string; // Kullanıcının kendi referans kodu
+  referralEarnings?: number; // Referans kazançları
+  isBanned?: boolean; // Ban durumu
+  banReason?: string; // Ban sebebi
+  lastLoginIP?: string; // Son giriş IP'si (güvenlik için)
+  deviceFingerprint?: string; // Cihaz parmak izi
 }
 
 export interface Package {
@@ -51,6 +58,8 @@ export interface PaymentNotification {
   createdAt: string;
   approvedAt?: string;
   adminNotes?: string;
+  referralBonus?: number; // Referans bonusu
+  referredUserId?: string; // Referans alan kullanıcı
 }
 
 export interface WithdrawalRequest {
@@ -72,4 +81,26 @@ export interface Coin {
   baseHashRate: number;
   baseEarning: number;
   color: string;
+}
+
+export interface ReferralBonus {
+  id: string;
+  referrerId: string; // Referans veren
+  referredUserId: string; // Referans alan
+  packageId: string;
+  packageAmount: number;
+  bonusAmount: number; // %20 bonus
+  status: 'pending' | 'paid';
+  createdAt: string;
+  paidAt?: string;
+}
+
+export interface SecurityLog {
+  id: string;
+  userId: string;
+  action: string;
+  ipAddress: string;
+  deviceFingerprint: string;
+  timestamp: string;
+  suspicious: boolean;
 }

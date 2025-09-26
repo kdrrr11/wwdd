@@ -4,6 +4,7 @@ import { User as FirebaseUser, onAuthStateChanged, signInWithEmailAndPassword, c
 import { ref, set, get, onValue, off } from 'firebase/database';
 import { auth, database } from '../config/firebase';
 import { User } from '../types';
+import { generateReferralCode, generateDeviceFingerprint } from '../utils/miningCalculations';
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -35,6 +36,27 @@ export const useAuth = () => {
             });
           } else {
             // Create new user profile
+            const deviceFingerprint = generateDeviceFingerprint();
+            const referralCode = generateReferralCode(firebaseUser.uid);
+            
+            // URL'den referans kodunu kontrol et
+            const urlParams = new URLSearchParams(window.location.search);
+            const referralParam = urlParams.get('ref');
+            let referredBy = undefined;
+            
+            if (referralParam) {
+              // Referans kodunu kontrol et
+              const usersRef = ref(database, 'users');
+              const usersSnapshot = await get(usersRef);
+              if (usersSnapshot.exists()) {
+                const users = usersSnapshot.val();
+                const referrer = Object.values(users).find((u: any) => u.referralCode === referralParam);
+                if (referrer) {
+                  referredBy = (referrer as any).uid;
+                }
+              }
+            }
+            
             const newUser: User = {
               uid: firebaseUser.uid,
               email: firebaseUser.email!,
@@ -44,11 +66,20 @@ export const useAuth = () => {
               trialEndDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(), // 90 days
               totalTrialEarnings: 0,
               balance: 0,
-              isAdmin: false
+              isAdmin: false,
+              referralCode,
+              referredBy,
+              referralEarnings: 0,
+              isBanned: false,
+              deviceFingerprint,
+              lastLoginIP: await getUserIP()
             };
             
             await set(userRef, newUser);
             setUser(newUser);
+            
+            // Güvenlik logu
+            await logSecurityEvent(firebaseUser.uid, 'ACCOUNT_CREATED', deviceFingerprint);
             
             // Set up real-time listener for the new user
             userDataUnsubscribe = onValue(userRef, (userSnapshot) => {
@@ -61,6 +92,11 @@ export const useAuth = () => {
             });
           }
         } else {
+          // Çıkış logu
+          if (user) {
+            await logSecurityEvent(user.uid, 'LOGOUT', user.deviceFingerprint || '');
+          }
+          
           // Clean up user data listener when user logs out
           if (userDataUnsubscribe) {
             userDataUnsubscribe();
@@ -89,6 +125,27 @@ export const useAuth = () => {
     try {
       setLoading(true);
       const result = await signInWithEmailAndPassword(auth, email, password);
+      
+      // Giriş güvenlik kontrolü
+      if (result.user) {
+        const deviceFingerprint = generateDeviceFingerprint();
+        const userIP = await getUserIP();
+        
+        // Kullanıcı bilgilerini güncelle
+        const userRef = ref(database, `users/${result.user.uid}`);
+        await set(userRef, {
+          ...user,
+          lastLoginIP: userIP,
+          deviceFingerprint
+        });
+        
+        // Güvenlik logu
+        await logSecurityEvent(result.user.uid, 'LOGIN', deviceFingerprint);
+        
+        // Şüpheli aktivite kontrolü
+        await checkSuspiciousActivity(result.user.uid, userIP, deviceFingerprint);
+      }
+      
       return result;
     } catch (error: any) {
       // Handle specific Firebase auth errors
@@ -199,6 +256,84 @@ export const useAuth = () => {
     } catch (error) {
       console.error('Failed to update user data:', error);
       throw new Error('Failed to update user data');
+    }
+  };
+
+  // IP adresi alma
+  const getUserIP = async (): Promise<string> => {
+    try {
+      const response = await fetch('https://api.ipify.org?format=json');
+      const data = await response.json();
+      return data.ip;
+    } catch (error) {
+      return 'unknown';
+    }
+  };
+
+  // Güvenlik olayı loglama
+  const logSecurityEvent = async (userId: string, action: string, deviceFingerprint: string) => {
+    try {
+      const userIP = await getUserIP();
+      const securityLog = {
+        userId,
+        action,
+        ipAddress: userIP,
+        deviceFingerprint,
+        timestamp: new Date().toISOString(),
+        suspicious: false
+      };
+      
+      const logsRef = ref(database, 'securityLogs');
+      await set(logsRef, securityLog);
+    } catch (error) {
+      console.error('Security logging failed:', error);
+    }
+  };
+
+  // Şüpheli aktivite kontrolü
+  const checkSuspiciousActivity = async (userId: string, ip: string, fingerprint: string) => {
+    try {
+      const logsRef = ref(database, 'securityLogs');
+      const snapshot = await get(logsRef);
+      
+      if (snapshot.exists()) {
+        const logs = Object.values(snapshot.val()) as any[];
+        const recentLogs = logs.filter(log => 
+          new Date(log.timestamp).getTime() > Date.now() - 24 * 60 * 60 * 1000
+        );
+        
+        // Aynı IP'den çok fazla hesap kontrolü
+        const sameIPAccounts = recentLogs.filter(log => 
+          log.ipAddress === ip && log.userId !== userId
+        );
+        
+        if (sameIPAccounts.length > 3) {
+          // Şüpheli aktivite tespit edildi
+          await banUser(userId, 'Multiple accounts from same IP detected');
+        }
+      }
+    } catch (error) {
+      console.error('Suspicious activity check failed:', error);
+    }
+  };
+
+  // Kullanıcı banlama
+  const banUser = async (userId: string, reason: string) => {
+    try {
+      const userRef = ref(database, `users/${userId}`);
+      const userSnapshot = await get(userRef);
+      
+      if (userSnapshot.exists()) {
+        const userData = userSnapshot.val();
+        await set(userRef, {
+          ...userData,
+          isBanned: true,
+          banReason: reason,
+          bannedAt: new Date().toISOString()
+        });
+      }
+    } catch (error) {
+      console.error('Ban user failed:', error);
     }
   };
 

@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Pickaxe, Shield, Zap, DollarSign, Target, RotateCcw, Smartphone } from 'lucide-react';
+import { SecurityBanner } from '../components/SecurityBanner';
 
 export const LandingPage: React.FC = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -86,6 +87,9 @@ export const LandingPage: React.FC = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-purple-600/10"></div>
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          {/* Security Banner */}
+          <SecurityBanner />
+          
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 text-white">
               Kripto Para Madenciliği ile 

@@ -75,7 +75,9 @@ function App() {
               user ? (
                 <Navigate to="/dashboard" replace />
               ) : (
-                <AuthPage />
+                <>
+                  <AuthPage />
+                </>
               )
             } 
           />

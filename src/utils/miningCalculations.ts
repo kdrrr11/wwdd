@@ -77,20 +77,23 @@ export const calculateHashRate = (baseHashRate: number, packageId?: string): num
     return 1000; // Default hash rate
   }
   
+  // GÜVENLİK: Sadece onaylanmış paketler için hash rate artışı
+  if (!packageId) {
+    // Paket yoksa sadece base hash rate
+    return baseHashRate;
+  }
+  
   const multipliers = getPackageMultipliers(packageId);
+  const result = Math.floor(baseHashRate * multipliers.hashRateMultiplier);
   
-  // Maksimum hash rate kontrolü
-  const maxMultiplier = packageId ? 10 : 1; // Premium paketler için max 10x, trial için 1x
-  const effectiveMultiplier = Math.min(multipliers.hashRateMultiplier, maxMultiplier);
-  
-  const result = Math.floor(baseHashRate * effectiveMultiplier);
-  
-  // Minimum ve maksimum değer kontrolü
-  return Math.max(baseHashRate, Math.min(result, baseHashRate * 10));
+  return Math.max(baseHashRate, result);
 };
 
 export const canUserMine = (user: any): boolean => {
   if (!user) return false;
+  
+  // Ban kontrolü
+  if (user.isBanned) return false;
   
   // Check if user has active package
   if (user.activePackage) return true;
@@ -113,4 +116,3 @@ export const formatHashRate = (hashRate: number): string => {
     return `${(hashRate / 1000).toFixed(1)}KH/s`;
   }
   return `${hashRate}H/s`;
-}

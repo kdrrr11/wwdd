@@ -10,10 +10,19 @@ export const AuthPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [referralCode, setReferralCode] = useState('');
   
   const { login, register } = useAuth();
   const navigate = useNavigate();
 
+  // URL'den referans kodunu al
+  React.useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const refParam = urlParams.get('ref');
+    if (refParam) {
+      setReferralCode(refParam);
+    }
+  }, []);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) {
@@ -103,6 +112,22 @@ export const AuthPage: React.FC = () => {
                 </button>
               </div>
             </div>
+
+            {!isLogin && (
+              <div>
+                <label htmlFor="referral" className="block text-sm font-medium text-gray-300 mb-2">
+                  Referans Kodu (İsteğe Bağlı)
+                </label>
+                <input
+                  id="referral"
+                  type="text"
+                  value={referralCode}
+                  onChange={(e) => setReferralCode(e.target.value)}
+                  className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  placeholder="Referans kodunu girin"
+                />
+              </div>
+            )}
 
             <button
               type="submit"

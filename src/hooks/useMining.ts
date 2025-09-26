@@ -234,6 +234,12 @@ export const useMining = () => {
   const startMining = useCallback(async (coinId: string) => {
     if (!user || isLoading) return;
 
+    // Ban kontrolü
+    if (user.isBanned) {
+      toast.error(`Hesabınız banlanmıştır. Sebep: ${user.banReason || 'Güvenlik ihlali'}`);
+      return;
+    }
+
     if (!canUserMine(user)) {
       toast.error('Mining not available. Please check your trial status or upgrade your package.');
       return;

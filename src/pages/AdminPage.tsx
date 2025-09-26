@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { ref, onValue, set, push, get } from 'firebase/database';
 import { database } from '../config/firebase';
 import { useAuth } from '../hooks/useAuth';
-import { PaymentNotification, WithdrawalRequest, User } from '../types';
+import { PaymentNotification, WithdrawalRequest, User, ReferralBonus } from '../types';
 import { Check, X, Eye, DollarSign, Users, Package, AlertCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
+import { calculateReferralBonus } from '../utils/miningCalculations';
 
 export const AdminPage: React.FC = () => {
   const { user } = useAuth();
@@ -87,6 +88,39 @@ export const AdminPage: React.FC = () => {
             activePackage: notification.packageId,
             packageActivatedAt: new Date().toISOString()
           });
+
+          // Referans bonusu kontrolü ve ödeme
+          if (userData.referredBy) {
+            const referralBonus = calculateReferralBonus(notification.amount);
+            
+            // Referans veren kullanıcıya bonus ekle
+            const referrerRef = ref(database, `users/${userData.referredBy}`);
+            const referrerSnapshot = await get(referrerRef);
+            
+            if (referrerSnapshot.exists()) {
+              const referrerData = referrerSnapshot.val();
+              await set(referrerRef, {
+                ...referrerData,
+                balance: (referrerData.balance || 0) + referralBonus,
+                referralEarnings: (referrerData.referralEarnings || 0) + referralBonus
+              });
+
+              // Referans bonus kaydı oluştur
+              const bonusRecord: Omit<ReferralBonus, 'id'> = {
+                referrerId: userData.referredBy,
+                referredUserId: notification.userId,
+                packageId: notification.packageId,
+                packageAmount: notification.amount,
+                bonusAmount: referralBonus,
+                status: 'paid',
+                createdAt: new Date().toISOString(),
+                paidAt: new Date().toISOString()
+              };
+
+              const bonusRef = ref(database, 'referralBonuses');
+              await push(bonusRef, bonusRecord);
+            }
+          }
         }
       }
 

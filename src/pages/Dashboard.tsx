@@ -2,6 +2,8 @@
 import React from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { TrialStatus } from '../components/TrialStatus';
+import { ReferralSystem } from '../components/ReferralSystem';
+import { UpgradePrompt } from '../components/UpgradePrompt';
 import { TrendingUp, DollarSign, Clock, Package, Pickaxe, Eye } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -83,6 +85,9 @@ export const Dashboard: React.FC = () => {
 
       {/* Trial Status */}
       <TrialStatus />
+
+      {/* Referral System */}
+      <ReferralSystem />
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
@@ -210,6 +215,9 @@ export const Dashboard: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Upgrade Prompt */}
+      <UpgradePrompt />
     </div>
   );
 };
