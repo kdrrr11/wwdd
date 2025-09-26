@@ -193,3 +193,8 @@ export const generateReferralCode = (userId: string): string => {
   const code = Math.abs(hash).toString(36).toUpperCase().substring(0, 8);
   return code.padStart(8, '0');
 };
+
+export const calculateReferralBonus = (amount: number): number => {
+  // Calculate 20% referral bonus
+  return amount * 0.2;
+};
