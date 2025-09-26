@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useLanguage } from '../hooks/useLanguage';
 import { LanguageSelector } from '../components/LanguageSelector';
-import { supportedLanguages } from '../utils/languages';
+import { supportedLanguages, detectUserLanguage } from '../utils/languages';
 import { useNavigate, Link } from 'react-router-dom';
 import { Pickaxe, Eye, EyeOff, ArrowLeft, Globe } from 'lucide-react';
 import toast from 'react-hot-toast';

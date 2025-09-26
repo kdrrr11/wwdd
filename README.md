@@ -98,9 +98,11 @@ Apply these rules to your Realtime Database:
 ### 5. Admin Setup
 To create an admin user:
 1. Register normally through the app
-2. Go to Firebase Console > Realtime Database
-3. Find your user record
+2. Go to Firebase Console > Realtime Database > users
+3. Find your user record (by email)
 4. Add `"isAdmin": true` to your user object
+5. Save the changes
+6. Refresh the app to see admin features
 
 ### 6. Run Development Server
 ```bash

@@ -328,9 +328,9 @@ export const LandingPage: React.FC = () => {
           <div className="text-center mt-12">
             <p className="text-gray-300 mb-4">Ve daha fazlası yakında...</p>
             <div className="flex justify-center space-x-4 text-sm text-gray-400">
+              <span>• Binance Coin (BNB)</span>
               <span>• Chainlink (LINK)</span>
               <span>• Avalanche (AVAX)</span>
-              <span>• Cosmos (ATOM)</span>
             </div>
           </div>
         </div>

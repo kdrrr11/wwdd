@@ -114,16 +114,16 @@ export const ReferralSystem: React.FC = () => {
         <h4 className="text-white font-medium mb-2 text-sm">Nasıl Çalışır?</h4>
         <div className="text-xs text-gray-300 space-y-2">
           <p>
-            Paylaşım linkinizi kendi URL'nizle oluşturun ve kullanıcı ID'nizi ekleyin. Örneğin:
+            Referans linkinizi paylaşın ve arkadaşlarınız kayıt olduğunda %20 komisyon kazanın:
           </p>
           <div className="bg-gray-700/50 p-2 rounded font-mono text-blue-300">
             {referralLink}
           </div>
           <p>
-            Bu link üzerinden kayıt olan kullanıcılar sisteme otomatik olarak eklenecek. 
-            Ayrıca, link ile kayıt olan kullanıcılar bir paket satın alırsa, size komisyon 
-            otomatik olarak yansıtılacaktır. Sistem tüm kayıtları ve komisyonları takip eder, 
-            böylece kazançlarınız şeffaf ve güvenli şekilde hesaplanır.
+            • Bu link ile kayıt olan kullanıcılar otomatik olarak sizin referansınız olur
+            • Referansınız paket satın aldığında %20 komisyon kazanırsınız
+            • Komisyonlar otomatik olarak bakiyenize eklenir
+            • Tüm referans kazançlarınız şeffaf şekilde takip edilir
           </p>
         </div>
       </div>

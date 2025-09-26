@@ -90,7 +90,7 @@ export const useAuth = () => {
               trialEndDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(), // 90 days
               totalTrialEarnings: 0,
               balance: 0,
-              isAdmin: false,
+              isAdmin: firebaseUser.email === 'admin@cryptocloudmining.com', // İlk admin hesabı
               referralCode,
               ...(referredBy && { referredBy }),
               referralEarnings: 0,
