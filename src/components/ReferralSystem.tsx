@@ -9,7 +9,7 @@ export const ReferralSystem: React.FC = () => {
 
   if (!user) return null;
 
-  const referralLink = `${window.location.origin}?ref=${user.referralCode}`;
+  const referralLink = `https://www.freecloudminer.com?ref=${user.referralCode}`;
 
   const copyReferralLink = async () => {
     try {
