@@ -15,8 +15,8 @@ export const TrialStatus: React.FC = () => {
   const earningsLeft = Math.max(0, 25 - (user.totalTrialEarnings || 0));
   const isTrialActive = daysLeft > 0 && earningsLeft > 0;
   
-  // Progress percentage calculation - FIX FOR NETLIFY ERROR
-  const progressPercentage = Math.min(((user?.totalTrialEarnings ?? 0) / 25) * 100, 100);
+  // Progress percentage calculation
+  const progressPercentage = Math.min(((user?.totalTrialEarnings ?? 0) / 25.0) * 100, 100);
 
   return (
     <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-xl p-4 md:p-6 border border-blue-500/30 mb-4 md:mb-6">
@@ -50,7 +50,7 @@ export const TrialStatus: React.FC = () => {
           <div className="min-w-0 flex-1">
             <p className="text-xs md:text-sm text-gray-400">Kazanç Limiti</p>
             <p className="text-base md:text-lg font-semibold text-white">
-              ${Math.max(0, 25 - (user.totalTrialEarnings ?? 0)).toFixed(2)} / $25.00
+              ${Math.max(0, 25.0 - (user.totalTrialEarnings ?? 0)).toFixed(2)} / $25.00
             </p>
           </div>
         </div>
@@ -70,7 +70,7 @@ export const TrialStatus: React.FC = () => {
         </div>
         <div className="flex justify-between text-xs text-gray-500 mt-1">
           <span>$0</span>
-          <span>$25</span>
+          <span>$25.00</span>
         </div>
       </div>
       

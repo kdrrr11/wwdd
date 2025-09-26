@@ -16,18 +16,18 @@ export interface User {
 export const getPackageMultipliers = (packageId?: string): MiningCalculation => {
   const multipliers: Record<string, MiningCalculation> = {
     starter: {
-      hashRateMultiplier: 2.0,
-      earningMultiplier: 1.5,
+      hashRateMultiplier: 2.5,
+      earningMultiplier: 2.0,
       dailyEarningBonus: 3.5
     },
     professional: {
-      hashRateMultiplier: 3.5,
-      earningMultiplier: 2.5,
+      hashRateMultiplier: 4.0,
+      earningMultiplier: 3.5,
       dailyEarningBonus: 12.0
     },
     enterprise: {
-      hashRateMultiplier: 5.0,
-      earningMultiplier: 4.0,
+      hashRateMultiplier: 6.0,
+      earningMultiplier: 5.0,
       dailyEarningBonus: 25.0
     }
   };
@@ -117,7 +117,7 @@ export const canUserMine = (user: User | null | undefined): boolean => {
   const trialEndDate = user.trialEndDate ? new Date(user.trialEndDate) : null;
   const now = new Date();
   const trialActive = trialEndDate && now < trialEndDate;
-  const earningsWithinLimit = (user.totalTrialEarnings || 0) < 25;
+  const earningsWithinLimit = (user.totalTrialEarnings || 0) < 25.0; // Kesin $25 limit
   
   return trialActive && earningsWithinLimit;
 };

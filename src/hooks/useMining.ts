@@ -22,7 +22,7 @@ export const useMining = () => {
       symbol: 'BTC', 
       icon: '₿', 
       baseHashRate: 1000, 
-      baseEarning: 0.001, 
+      baseEarning: 0.0092, // 90 günde $25 = günlük $0.278 / 30 saat = saatlik $0.0092
       color: '#F7931A',
       description: 'The first and most valuable cryptocurrency',
       marketCap: '$1.2T',
@@ -33,8 +33,8 @@ export const useMining = () => {
       name: 'Ethereum', 
       symbol: 'ETH', 
       icon: 'Ξ', 
-      baseHashRate: 2500, 
-      baseEarning: 0.003, 
+      baseHashRate: 1000, 
+      baseEarning: 0.0092, 
       color: '#627EEA',
       description: 'Smart contract platform and DeFi leader',
       marketCap: '$400B',
@@ -45,8 +45,8 @@ export const useMining = () => {
       name: 'Dogecoin', 
       symbol: 'DOGE', 
       icon: 'Ð', 
-      baseHashRate: 5000, 
-      baseEarning: 0.8, 
+      baseHashRate: 1000, 
+      baseEarning: 0.0092, 
       color: '#C2A633',
       description: 'The meme coin that became mainstream',
       marketCap: '$25B',
@@ -57,8 +57,8 @@ export const useMining = () => {
       name: 'Litecoin', 
       symbol: 'LTC', 
       icon: 'Ł', 
-      baseHashRate: 3000, 
-      baseEarning: 0.015, 
+      baseHashRate: 1000, 
+      baseEarning: 0.0092, 
       color: '#BFBBBB',
       description: 'Digital silver to Bitcoin\'s gold',
       marketCap: '$8B',
@@ -69,8 +69,8 @@ export const useMining = () => {
       name: 'Cardano',
       symbol: 'ADA',
       icon: '₳',
-      baseHashRate: 4000,
-      baseEarning: 0.25,
+      baseHashRate: 1000,
+      baseEarning: 0.0092,
       color: '#0033AD',
       description: 'Sustainable blockchain platform',
       marketCap: '$15B',
@@ -81,8 +81,8 @@ export const useMining = () => {
       name: 'Polkadot',
       symbol: 'DOT',
       icon: '●',
-      baseHashRate: 3500,
-      baseEarning: 0.18,
+      baseHashRate: 1000,
+      baseEarning: 0.0092,
       color: '#E6007A',
       description: 'Multi-chain interoperability protocol',
       marketCap: '$12B',
@@ -93,8 +93,8 @@ export const useMining = () => {
       name: 'Solana',
       symbol: 'SOL',
       icon: '◎',
-      baseHashRate: 6000,
-      baseEarning: 0.35,
+      baseHashRate: 1000,
+      baseEarning: 0.0092,
       color: '#9945FF',
       description: 'High-performance blockchain',
       marketCap: '$45B',
@@ -105,8 +105,8 @@ export const useMining = () => {
       name: 'Polygon',
       symbol: 'MATIC',
       icon: '⬟',
-      baseHashRate: 7000,
-      baseEarning: 0.45,
+      baseHashRate: 1000,
+      baseEarning: 0.0092,
       color: '#8247E5',
       description: 'Ethereum scaling solution',
       marketCap: '$8B',
@@ -389,12 +389,13 @@ export const useMining = () => {
   }, [user, activeSessions, isLoading]);
 
   const stopMining = useCallback(async (sessionId: string, reason?: string) => {
-    if (!user || isLoading) return;
+    if (!user) return;
 
     setIsLoading(true);
     try {
       const session = activeSessions.find(s => s.id === sessionId);
       if (!session) {
+        setIsLoading(false);
         toast.error('Mining session not found');
         return;
       }

@@ -90,12 +90,12 @@ export const MiningCard: React.FC<MiningCardProps> = ({
           
           <button
             onClick={() => isActive && session ? onStop(session.id) : onStart(coin.id)}
-            disabled={disabled}
+            disabled={disabled || (isActive && !session)}
             className={`flex items-center space-x-2 px-3 py-2 md:px-4 md:py-2 rounded-lg font-medium transition-all text-sm ${
               isActive
                 ? 'bg-red-600 hover:bg-red-700 text-white'
                 : 'bg-blue-600 hover:bg-blue-700 text-white'
-            } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+            } ${(disabled || (isActive && !session)) ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             {isActive ? (
               <>
