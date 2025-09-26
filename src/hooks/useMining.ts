@@ -407,7 +407,7 @@ export const useMining = () => {
         isActive: false,
         endTime: new Date().toISOString(),
         autoStopped: !!reason,
-        stopReason: reason
+        ...(reason && { stopReason: reason })
       });
       
       // Session referansını temizle
