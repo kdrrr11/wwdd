@@ -69,8 +69,10 @@ export const ReferralSystem: React.FC = () => {
             <Users className="h-4 w-4 text-blue-400" />
             <p className="text-xs text-gray-400">Davet Edilen</p>
           </div>
-          <p className="text-lg font-bold text-blue-400">0</p>
+          <p className="text-lg font-bold text-blue-400">
             {user.totalReferrals || 0}
+          </p>
+        </div>
       </div>
 
       {/* Referral Link */}
@@ -127,6 +129,4 @@ export const ReferralSystem: React.FC = () => {
       </div>
     </div>
   );
-};
-  )
 }
