@@ -14,7 +14,6 @@ export const Dashboard: React.FC = () => {
 
   const stats = [
     {
-      label: 'Toplam Bakiye',
       value: `$${(user?.balance ?? 0).toFixed(2)}`,
       icon: DollarSign,
       color: 'text-green-400',
