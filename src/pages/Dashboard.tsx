@@ -5,7 +5,7 @@ import { useLanguage } from '../hooks/useLanguage';
 import { TrialStatus } from '../components/TrialStatus';
 import { ReferralSystem } from '../components/ReferralSystem';
 import { UpgradePrompt } from '../components/UpgradePrompt';
-import { TrendingUp, DollarSign, Clock, Package, Pickaxe, Eye } from 'lucide-react';
+import { TrendingUp, DollarSign, Clock, Package, Pickaxe, Eye, Shield } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export const Dashboard: React.FC = () => {
@@ -82,15 +82,87 @@ export const Dashboard: React.FC = () => {
     <div className="space-y-6 md:space-y-8 pb-20 lg:pb-8">
       {/* Header */}
       <div className="text-center lg:text-left">
-        <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">{t('dashboard')}</h1>
-        <p className="text-gray-400 text-sm md:text-base">{t('welcomeBack')}, {user?.email}</p>
+        <div className="flex items-center justify-center lg:justify-start space-x-3 mb-2">
+          <h1 className="text-2xl md:text-3xl font-bold text-white">{t('dashboard')}</h1>
+          {user?.isAdmin && (
+            <div className="flex items-center space-x-2 bg-gradient-to-r from-red-600/20 to-orange-600/20 border border-red-500/30 px-3 py-1 rounded-full">
+              <Shield className="h-4 w-4 text-red-400" />
+              <span className="text-red-400 font-semibold text-sm">Yönetici</span>
+            </div>
+          )}
+        </div>
+        <p className="text-gray-400 text-sm md:text-base">
+          {t('welcomeBack')}, {user?.email}
+          {user?.isAdmin && <span className="text-red-400 ml-2">(Admin)</span>}
+        </p>
       </div>
 
       {/* Trial Status */}
-      <TrialStatus />
+      {!user?.isAdmin && <TrialStatus />}
 
       {/* Referral System */}
-      <ReferralSystem />
+      {!user?.isAdmin && <ReferralSystem />}
+
+      {/* Admin Quick Access */}
+      {user?.isAdmin && (
+        <div className="bg-gradient-to-r from-red-600/20 to-orange-600/20 rounded-xl p-4 md:p-6 border border-red-500/30">
+          <div className="flex items-center space-x-3 mb-4">
+            <div className="p-2 rounded-lg bg-red-600/20">
+              <Shield className="h-5 w-5 md:h-6 md:w-6 text-red-400" />
+            </div>
+            <div>
+              <h3 className="text-lg md:text-xl font-semibold text-white">Yönetici Paneli</h3>
+              <p className="text-sm text-gray-300">Sistem yönetimi ve kullanıcı işlemleri</p>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+            <Link
+              to="/admin"
+              className="flex flex-col items-center p-3 md:p-4 rounded-lg border border-red-500/30 bg-red-600/10 hover:bg-red-600/20 transition-colors"
+            >
+              <Shield className="h-6 w-6 md:h-8 md:w-8 text-red-400 mb-2 md:mb-3" />
+              <div className="text-center">
+                <p className="text-white font-medium text-xs md:text-sm mb-1">Admin Panel</p>
+                <p className="text-gray-400 text-xs hidden md:block">Yönetim</p>
+              </div>
+            </Link>
+            
+            <Link
+              to="/admin"
+              className="flex flex-col items-center p-3 md:p-4 rounded-lg border border-orange-500/30 bg-orange-600/10 hover:bg-orange-600/20 transition-colors"
+            >
+              <DollarSign className="h-6 w-6 md:h-8 md:w-8 text-orange-400 mb-2 md:mb-3" />
+              <div className="text-center">
+                <p className="text-white font-medium text-xs md:text-sm mb-1">Ödemeler</p>
+                <p className="text-gray-400 text-xs hidden md:block">Onay</p>
+              </div>
+            </Link>
+            
+            <Link
+              to="/admin"
+              className="flex flex-col items-center p-3 md:p-4 rounded-lg border border-yellow-500/30 bg-yellow-600/10 hover:bg-yellow-600/20 transition-colors"
+            >
+              <Package className="h-6 w-6 md:h-8 md:w-8 text-yellow-400 mb-2 md:mb-3" />
+              <div className="text-center">
+                <p className="text-white font-medium text-xs md:text-sm mb-1">Kullanıcılar</p>
+                <p className="text-gray-400 text-xs hidden md:block">Yönetim</p>
+              </div>
+            </Link>
+            
+            <Link
+              to="/admin"
+              className="flex flex-col items-center p-3 md:p-4 rounded-lg border border-green-500/30 bg-green-600/10 hover:bg-green-600/20 transition-colors"
+            >
+              <TrendingUp className="h-6 w-6 md:h-8 md:w-8 text-green-400 mb-2 md:mb-3" />
+              <div className="text-center">
+                <p className="text-white font-medium text-xs md:text-sm mb-1">İstatistikler</p>
+                <p className="text-gray-400 text-xs hidden md:block">Analiz</p>
+              </div>
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
@@ -119,7 +191,13 @@ export const Dashboard: React.FC = () => {
       <div className="bg-gray-800/50 backdrop-blur-md rounded-xl p-4 md:p-6 border border-gray-700">
         <h3 className="text-lg md:text-xl font-semibold text-white mb-4 md:mb-6">{t('quickActions')}</h3>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-          {quickActions.map((action, index) => {
+          {quickActions.filter(action => {
+            // Admin için mining ve packages gizle
+            if (user?.isAdmin && (action.link === '/mining' || action.link === '/packages')) {
+              return false;
+            }
+            return true;
+          }).map((action, index) => {
             const Icon = action.icon;
             return (
               <Link
@@ -195,7 +273,7 @@ export const Dashboard: React.FC = () => {
       </div>
 
       {/* Mining Status Card */}
-      {!user?.activePackage && (
+      {!user?.activePackage && !user?.isAdmin && (
         <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/30 rounded-xl p-4 md:p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
@@ -220,7 +298,7 @@ export const Dashboard: React.FC = () => {
       )}
 
       {/* Upgrade Prompt */}
-      <UpgradePrompt />
+      {!user?.isAdmin && <UpgradePrompt />}
     </div>
   );
 };
